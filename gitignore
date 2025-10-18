@@ -1,0 +1,20 @@
+# فایل‌های سیستم
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# فایل‌های امنیتی
+.env
+.env.local
+.env.production
+
+# لاگ‌ها
+*.log
+npm-debug.log*
+
+# پوشه‌های سیستم
+node_modules/
+dist/
+build/
+.temp/
+.cache/
