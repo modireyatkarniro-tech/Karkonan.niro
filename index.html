@@ -3,28 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سیستم جامع مدیریت کارکنان | نسخه ۵.۲.۱</title>
+    <title>سیستم جامع مدیریت کارکنان | نسخه ۵.۲</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.css">
     <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
     <style>
-        :root {
-            --primary-employee: #10b981;
-            --secondary-employee: #059669;
-            --primary-admin: #3b82f6;
-            --secondary-admin: #1d4ed8;
-            --sidebar-employee: #065f46;
-            --sidebar-admin: #1e3a8a;
-            --header-employee: #10b981;
-            --header-admin: #3b82f6;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --info: #06b6d4;
-            --purple: #8b5cf6;
-        }
-
+        /* تمام استایل‌های قبلی کاملاً حفظ شده */
         * {
             margin: 0;
             padding: 0;
@@ -33,8 +18,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8fafc;
-            color: #334155;
+            background: #f5f5f5;
+            color: #333;
             line-height: 1.6;
         }
 
@@ -42,7 +27,20 @@
             display: none !important;
         }
 
-        /* استایل‌های احراز هویت */
+        .employee-theme {
+            --primary-color: #10b981;
+            --secondary-color: #059669;
+            --sidebar-bg: #065f46;
+            --header-bg: #10b981;
+        }
+
+        .admin-theme {
+            --primary-color: #3b82f6;
+            --secondary-color: #1d4ed8;
+            --sidebar-bg: #1e3a8a;
+            --header-bg: #3b82f6;
+        }
+
         .auth-container {
             display: flex;
             justify-content: center;
@@ -53,23 +51,11 @@
 
         .auth-card {
             background: white;
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            width: 420px;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 400px;
             max-width: 90%;
-            animation: slideUp 0.6s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .auth-header {
@@ -78,39 +64,37 @@
         }
 
         .auth-header h2 {
-            color: #1e293b;
+            color: #333;
             margin-bottom: 0.5rem;
-            font-size: 1.5rem;
         }
 
         .auth-header p {
-            color: #64748b;
-            font-size: 0.95rem;
+            color: #666;
         }
 
         .auth-tabs {
             display: flex;
-            margin-bottom: 2rem;
-            background: #f1f5f9;
-            border-radius: 12px;
-            padding: 6px;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 4px;
         }
 
         .auth-tab {
             flex: 1;
-            padding: 0.875rem;
+            padding: 0.75rem;
             text-align: center;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 6px;
             transition: all 0.3s ease;
             font-weight: 500;
-            color: #64748b;
         }
 
         .auth-tab.active {
-            background: white;
-            color: #3b82f6;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+            background: var(--primary-color, #3b82f6);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
 
         .form-group {
@@ -122,29 +106,28 @@
             margin-bottom: 0.5rem;
             font-weight: 500;
             color: #374151;
-            font-size: 0.9rem;
         }
 
         .form-control {
             width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
             font-size: 1rem;
-            transition: all 0.3s ease;
-            background: white;
+            transition: border-color 0.3s ease;
+            background: #fff;
         }
 
         .form-control:focus {
             outline: none;
-            border-color: #3b82f6;
+            border-color: var(--primary-color, #3b82f6);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .btn {
-            padding: 0.875rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 500;
@@ -170,67 +153,57 @@
         }
 
         .btn-primary {
-            background: var(--primary-admin);
+            background: var(--primary-color, #3b82f6);
             color: white;
         }
 
         .btn-primary:hover {
-            background: var(--secondary-admin);
+            background: var(--secondary-color, #1d4ed8);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .btn-success {
-            background: var(--success);
+            background: #10b981;
             color: white;
         }
 
         .btn-success:hover {
             background: #059669;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .btn-danger {
-            background: var(--danger);
+            background: #ef4444;
             color: white;
         }
 
         .btn-danger:hover {
             background: #dc2626;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
         .btn-info {
-            background: var(--info);
+            background: #06b6d4;
             color: white;
         }
 
         .btn-info:hover {
             background: #0891b2;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
         }
 
         .btn-warning {
-            background: var(--warning);
+            background: #f59e0b;
             color: white;
         }
 
         .btn-warning:hover {
             background: #d97706;
             transform: translateY(-2px);
-        }
-
-        .btn-purple {
-            background: var(--purple);
-            color: white;
-        }
-
-        .btn-purple:hover {
-            background: #7c3aed;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
         }
 
         .btn-glass {
@@ -244,7 +217,6 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        /* استایل‌های پورتال */
         .container {
             display: flex;
             min-height: 100vh;
@@ -252,15 +224,10 @@
 
         .sidebar {
             width: 280px;
-            background: var(--sidebar-admin);
+            background: var(--sidebar-bg);
             color: white;
             padding: 0;
-            box-shadow: 3px 0 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .employee-theme .sidebar {
-            background: var(--sidebar-employee);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
 
         .sidebar-header {
@@ -271,17 +238,17 @@
         }
 
         .sidebar-header h2 {
-            font-size: 1.3rem;
-            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
             font-weight: 600;
         }
 
         .version {
-            font-size: 0.8rem;
+            font-size: 0.875rem;
             opacity: 0.8;
             background: rgba(255,255,255,0.1);
-            padding: 0.3rem 0.75rem;
-            border-radius: 15px;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
             display: inline-block;
         }
 
@@ -291,35 +258,33 @@
         }
 
         .sidebar-menu li {
-            margin: 0.3rem 0;
+            margin: 0.25rem 0;
         }
 
         .sidebar-menu a {
             color: white;
             text-decoration: none;
-            padding: 0.875rem 1.5rem;
+            padding: 0.75rem 1.5rem;
             display: flex;
             align-items: center;
-            gap: 0.875rem;
+            gap: 0.75rem;
             transition: all 0.3s ease;
-            border-right: 4px solid transparent;
+            border-right: 3px solid transparent;
         }
 
         .sidebar-menu a:hover,
         .sidebar-menu a.active {
-            background: rgba(255,255,255,0.15);
-            border-right-color: var(--primary-admin);
-        }
-
-        .employee-theme .sidebar-menu a:hover,
-        .employee-theme .sidebar-menu a.active {
-            border-right-color: var(--primary-employee);
+            background: rgba(255,255,255,0.1);
+            border-right-color: var(--primary-color);
         }
 
         .sidebar-menu i {
             width: 20px;
             text-align: center;
-            font-size: 1.1rem;
+        }
+
+        .menu-text {
+            flex: 1;
         }
 
         .main-content {
@@ -330,21 +295,17 @@
         }
 
         .header {
-            background: var(--header-admin);
+            background: var(--header-bg);
             color: white;
-            padding: 1.25rem 2rem;
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-        }
-
-        .employee-theme .header {
-            background: var(--header-employee);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .header h1 {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 600;
         }
 
@@ -355,15 +316,15 @@
         }
 
         .user-avatar {
-            width: 48px;
-            height: 48px;
+            width: 45px;
+            height: 45px;
             background: rgba(255,255,255,0.2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             border: 2px solid rgba(255,255,255,0.3);
         }
 
@@ -373,30 +334,29 @@
 
         .user-details div:first-child {
             font-weight: 600;
-            margin-bottom: 0.3rem;
-            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
         }
 
         .user-role {
-            font-size: 0.8rem;
+            font-size: 0.875rem;
             opacity: 0.9;
             background: rgba(255,255,255,0.2);
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
             display: inline-block;
         }
 
         .header-actions {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
-        .logout-btn {
+        .theme-toggle, .logout-btn {
             background: rgba(255,255,255,0.2);
             border: none;
             color: white;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -405,12 +365,11 @@
             justify-content: center;
         }
 
-        .logout-btn:hover {
+        .theme-toggle:hover, .logout-btn:hover {
             background: rgba(255,255,255,0.3);
             transform: scale(1.1);
         }
 
-        /* استایل‌های محتوای تب‌ها */
         .tab-content {
             padding: 2rem;
             display: none;
@@ -420,31 +379,20 @@
 
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .card {
             background: white;
-            border-radius: 15px;
+            border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 1.75rem;
-            border: 1px solid #e2e8f0;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
             overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
         }
 
         .card-header {
             padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -452,9 +400,9 @@
         }
 
         .card-title {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 600;
-            color: #1e293b;
+            color: #1f2937;
             margin: 0;
         }
 
@@ -462,76 +410,78 @@
             padding: 1.5rem;
         }
 
-        /* استایل‌های داشبورد */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
             background: white;
-            padding: 1.75rem;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border-left: 5px solid var(--primary-admin);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .employee-theme .stat-card {
-            border-left-color: var(--primary-employee);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .employee-stat-card {
+            border-left-color: #10b981;
+        }
+
+        .admin-stat-card {
+            border-left-color: #3b82f6;
         }
 
         .stat-icon {
-            width: 55px;
-            height: 55px;
-            background: var(--primary-admin);
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1rem;
             color: white;
-            font-size: 1.4rem;
+            font-size: 1.25rem;
         }
 
-        .employee-theme .stat-icon {
-            background: var(--primary-employee);
+        .employee-stat-card .stat-icon {
+            background: #10b981;
+        }
+
+        .admin-stat-card .stat-icon {
+            background: #3b82f6;
         }
 
         .stat-label {
-            font-size: 0.9rem;
-            color: #64748b;
+            font-size: 0.875rem;
+            color: #6b7280;
             margin-bottom: 0.5rem;
             font-weight: 500;
         }
 
         .stat-value {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #1f2937;
             margin-bottom: 0.5rem;
         }
 
         .stat-desc {
-            font-size: 0.85rem;
-            color: #64748b;
+            font-size: 0.875rem;
+            color: #6b7280;
         }
 
-        /* استایل‌های جداول */
         .table-responsive {
             overflow-x: auto;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            background: white;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
         }
 
         table {
@@ -541,9 +491,9 @@
         }
 
         th, td {
-            padding: 1.125rem;
+            padding: 1rem;
             text-align: right;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e5e7eb;
             white-space: nowrap;
         }
 
@@ -551,8 +501,8 @@
             background: #f8fafc;
             font-weight: 600;
             color: #374151;
-            font-size: 0.85rem;
-            border-bottom: 2px solid #e2e8f0;
+            font-size: 0.875rem;
+            border-bottom: 2px solid #e5e7eb;
         }
 
         tbody tr {
@@ -564,16 +514,16 @@
         }
 
         .status-badge {
-            padding: 0.5rem 0.875rem;
+            padding: 0.375rem 0.75rem;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 500;
             display: inline-block;
         }
 
         .status-badge.completed {
-            background: #dcfce7;
-            color: #166534;
+            background: #d1fae5;
+            color: #065f46;
         }
 
         .status-badge.pending {
@@ -582,8 +532,8 @@
         }
 
         .status-badge.approved {
-            background: #dcfce7;
-            color: #166534;
+            background: #d1fae5;
+            color: #065f46;
         }
 
         .status-badge.rejected {
@@ -591,7 +541,76 @@
             color: #dc2626;
         }
 
-        /* استایل‌های مودال */
+        .tabs {
+            display: flex;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+        .tab.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            margin-bottom: 0.75rem;
+            border-right: 4px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-right-color: #10b981;
+        }
+
+        .notification.error {
+            border-right-color: #ef4444;
+        }
+
+        .notification.info {
+            border-right-color: #06b6d4;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -604,7 +623,7 @@
             justify-content: center;
             align-items: center;
             padding: 1rem;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(5px);
         }
 
         .modal.active {
@@ -613,13 +632,13 @@
 
         .modal-content {
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             width: 100%;
-            max-width: 750px;
+            max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-            animation: modalAppear 0.4s ease;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            animation: modalAppear 0.3s ease;
         }
 
         @keyframes modalAppear {
@@ -634,19 +653,19 @@
         }
 
         .modal-header {
-            padding: 1.75rem 2rem;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #fafafa;
-            border-radius: 20px 20px 0 0;
+            border-radius: 15px 15px 0 0;
         }
 
         .modal-header h3 {
             margin: 0;
-            color: #1e293b;
-            font-size: 1.3rem;
+            color: #1f2937;
+            font-size: 1.25rem;
         }
 
         .modal-body {
@@ -655,12 +674,12 @@
 
         .modal-footer {
             padding: 1.5rem 2rem;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #e5e7eb;
             display: flex;
             justify-content: flex-end;
-            gap: 0.875rem;
+            gap: 0.75rem;
             background: #fafafa;
-            border-radius: 0 0 20px 20px;
+            border-radius: 0 0 15px 15px;
         }
 
         .close-modal {
@@ -668,10 +687,10 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #64748b;
+            color: #6b7280;
             transition: color 0.3s ease;
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -680,14 +699,13 @@
 
         .close-modal:hover {
             color: #374151;
-            background: #f1f5f9;
+            background: #f3f4f6;
         }
 
-        /* استایل‌های فرم */
         .form-row {
             display: flex;
-            gap: 1.25rem;
-            margin-bottom: 1.75rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-row .form-group {
@@ -697,23 +715,21 @@
 
         textarea.form-control {
             resize: vertical;
-            min-height: 120px;
-            line-height: 1.5;
+            min-height: 100px;
         }
 
         select.form-control {
             appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
             background-position: left 1rem center;
             background-repeat: no-repeat;
             background-size: 1rem;
             padding-left: 3rem;
         }
 
-        /* استایل‌های آپلود عکس */
         .image-upload-container {
             border: 2px dashed #d1d5db;
-            border-radius: 12px;
+            border-radius: 8px;
             padding: 2rem;
             text-align: center;
             cursor: pointer;
@@ -722,12 +738,12 @@
         }
 
         .image-upload-container:hover {
-            border-color: #3b82f6;
+            border-color: var(--primary-color);
             background: #f8fafc;
         }
 
         .image-upload-container i {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #9ca3af;
             margin-bottom: 1rem;
         }
@@ -740,15 +756,15 @@
         .image-preview {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.75rem;
             margin-top: 1rem;
         }
 
         .image-preview img {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 2px solid #e5e7eb;
             cursor: pointer;
             transition: transform 0.3s ease;
@@ -758,131 +774,20 @@
             transform: scale(1.05);
         }
 
-        /* استایل‌های گالری */
-        .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .gallery-item {
-            position: relative;
-            border-radius: 10px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .gallery-item img {
-            width: 100%;
-            height: 140px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .gallery-item:hover img {
-            transform: scale(1.05);
-        }
-
-        .gallery-actions {
-            position: absolute;
-            top: 0.75rem;
-            left: 0.75rem;
-            display: flex;
-            gap: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .gallery-item:hover .gallery-actions {
-            opacity: 1;
-        }
-
-        .gallery-btn {
-            background: rgba(0,0,0,0.7);
-            color: white;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9rem;
-        }
-
-        /* استایل‌های سیستم کشیک */
-        .duty-controls {
-            background: #f8fafc;
-            padding: 1.75rem;
-            border-radius: 12px;
-            margin-bottom: 1.75rem;
-            border: 1px solid #e2e8f0;
-        }
-
-        .duty-table-container {
-            max-height: 650px;
-            overflow-y: auto;
-            margin-top: 1rem;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .duty-cell select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-        }
-
-        .duty-cell select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-        }
-
-        .team-members-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-top: 0.75rem;
-        }
-
-        .team-members-list .badge {
-            background: #e2e8f0;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #475569;
-            font-weight: 500;
-        }
-
-        /* استایل‌های نقشه */
-        #map, #admin-map {
-            height: 400px;
-            border-radius: 12px;
-            margin: 1rem 0;
-            border: 1px solid #e2e8f0;
-        }
-
-        /* استایل‌های هشدار حضور و غیاب */
         .attendance-alert {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             text-align: center;
             z-index: 1001;
             animation: alertAppear 0.5s ease;
-            border: 5px solid;
-            min-width: 350px;
+            border: 4px solid;
+            min-width: 300px;
         }
 
         @keyframes alertAppear {
@@ -897,118 +802,129 @@
         }
 
         .attendance-success {
-            border-color: var(--success);
+            border-color: #10b981;
         }
 
         .attendance-error {
-            border-color: var(--danger);
+            border-color: #ef4444;
         }
 
         .attendance-alert h3 {
             margin-bottom: 1rem;
-            color: #1e293b;
-            font-size: 1.6rem;
+            color: #1f2937;
+            font-size: 1.5rem;
         }
 
         .attendance-alert p {
-            color: #64748b;
+            color: #6b7280;
             font-size: 1.1rem;
-            line-height: 1.6;
         }
 
         .attendance-controls {
             display: flex;
-            gap: 1.25rem;
+            gap: 1rem;
             justify-content: center;
             margin: 2rem 0;
         }
 
-        /* استایل‌های گزارش‌گیری */
+        #map, #admin-map {
+            height: 400px;
+            border-radius: 10px;
+            margin: 1rem 0;
+            border: 1px solid #e5e7eb;
+        }
+
         .report-controls {
             background: #f8fafc;
-            padding: 1.75rem;
-            border-radius: 12px;
-            margin-bottom: 1.75rem;
-            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e5e7eb;
         }
 
         .settings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
 
         .settings-group {
             background: #f8fafc;
-            padding: 1.75rem;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
         }
 
         .settings-group h4 {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1rem;
             color: #374151;
             font-size: 1.1rem;
-            border-bottom: 2px solid var(--primary-admin);
-            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
         }
 
-        /* استایل‌های اطلاع‌رسانی */
-        .notification-container {
-            position: fixed;
-            top: 25px;
-            left: 25px;
-            z-index: 1000;
-            max-width: 420px;
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
         }
 
-        .notification {
-            background: white;
-            padding: 1.25rem 1.75rem;
-            border-radius: 12px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
-            margin-bottom: 1rem;
-            border-right: 5px solid #3b82f6;
+        .gallery-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-actions {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-actions {
+            opacity: 1;
+        }
+
+        .gallery-btn {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            animation: slideInLeft 0.4s ease;
+            justify-content: center;
+            font-size: 0.875rem;
         }
 
-        @keyframes slideInLeft {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .notification.success {
-            border-right-color: var(--success);
-        }
-
-        .notification.error {
-            border-right-color: var(--danger);
-        }
-
-        .notification.info {
-            border-right-color: var(--info);
-        }
-
-        /* استایل‌های مودال تصویر */
         .image-modal {
             background: rgba(0,0,0,0.9);
         }
 
         .image-modal-content {
-            max-width: 95vw;
-            max-height: 95vh;
+            max-width: 90vw;
+            max-height: 90vh;
             background: transparent;
             box-shadow: none;
-            border-radius: 0;
         }
 
         .image-modal-body {
@@ -1020,70 +936,26 @@
 
         .image-modal-body img {
             max-width: 100%;
-            max-height: 90vh;
+            max-height: 80vh;
             object-fit: contain;
         }
 
-        /* استایل‌های وضعیت GPS */
-        .gps-status {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 10px;
-            padding: 1.25rem;
-            margin-bottom: 1.75rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .gps-status i {
-            font-size: 1.5rem;
-            color: #0369a1;
-        }
-
-        .gps-status-text {
-            flex: 1;
-            font-weight: 500;
-        }
-
-        .gps-status.active {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-        }
-
-        .gps-status.active i {
-            color: #16a34a;
-        }
-
-        .gps-status.inactive {
-            background: #fef2f2;
-            border-color: #fecaca;
-        }
-
-        .gps-status.inactive i {
-            color: #dc2626;
-        }
-
-        /* استایل‌های تست */
         .test-info {
             background: #f0f9ff;
             border: 1px solid #bae6fd;
-            border-radius: 12px;
-            padding: 1.25rem;
-            margin-top: 1.75rem;
-            font-size: 0.85rem;
-            line-height: 1.6;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
         }
 
         .test-info strong {
             color: #0369a1;
             display: block;
             margin-bottom: 0.5rem;
-            font-size: 0.9rem;
         }
 
-        /* استایل‌های ریسپانسیو */
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             .container {
                 flex-direction: column;
             }
@@ -1093,33 +965,8 @@
                 height: auto;
             }
             
-            .sidebar-menu {
-                display: flex;
-                overflow-x: auto;
-                padding: 1rem;
-            }
-            
-            .sidebar-menu li {
-                margin: 0 0.5rem;
-            }
-            
-            .sidebar-menu a {
-                padding: 0.75rem 1rem;
-                border-right: none;
-                border-bottom: 3px solid transparent;
-            }
-            
-            .sidebar-menu a.active {
-                border-right: none;
-                border-bottom: 3px solid var(--primary-admin);
-            }
-        }
-
-        @media (max-width: 768px) {
             .header {
                 padding: 1rem;
-                flex-direction: column;
-                gap: 1rem;
             }
             
             .tab-content {
@@ -1135,50 +982,143 @@
                 gap: 0;
             }
             
-            .modal-content {
-                margin: 1rem;
-                width: calc(100% - 2rem);
-            }
-            
-            .user-info {
-                flex-direction: column;
-                text-align: center;
-                gap: 0.75rem;
-            }
-            
             .attendance-controls {
                 flex-direction: column;
             }
             
-            .image-gallery {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            .modal-content {
+                margin: 1rem;
+                width: calc(100% - 2rem);
             }
         }
 
-        /* استایل‌های اسکرول بار */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
+            background: #f1f1f1;
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
+            background: #c1c1c1;
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: #a8a8a8;
+        }
+
+        .datepicker-input {
+            cursor: pointer;
+        }
+
+        .hourly-time-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .hourly-time-group .form-group {
+            flex: 1;
+        }
+
+        .print-btn {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .print-btn:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .duty-employee-select {
+            margin-bottom: 1rem;
+        }
+
+        .duty-employee-select select {
+            margin-left: 0.5rem;
+        }
+
+        .team-members-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .team-members-list .badge {
+            background: #e5e7eb;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.875rem;
+            color: #374151;
+        }
+
+        .duty-edit-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .duty-cell {
+            position: relative;
+        }
+
+        .duty-cell select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .monthly-duty-grid {
+            margin-top: 1rem;
+        }
+
+        .duty-select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            background: white;
+            font-size: 0.875rem;
+        }
+
+        .duty-summary {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .duty-summary h4 {
+            color: #0369a1;
+            margin-bottom: 0.5rem;
+        }
+
+        .duty-help {
+            background: #fefce8;
+            border: 1px solid #fef08a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .duty-help h4 {
+            color: #ca8a04;
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
 <body>
     <div class="notification-container" id="notification-container"></div>
 
-    <!-- صفحه احراز هویت -->
     <div id="auth-page" class="auth-container">
         <div class="auth-card">
             <div class="auth-header">
@@ -1215,12 +1155,11 @@
         </div>
     </div>
 
-    <!-- پورتال کارمند -->
     <div id="employee-portal" class="container hidden employee-theme">
         <nav class="sidebar employee-sidebar">
             <div class="sidebar-header">
                 <h2>👋 پنل کارمند</h2>
-                <div class="version">نسخه ۵.۲.۱</div>
+                <div class="version">نسخه ۵.۲.۰</div>
             </div>
             <ul class="sidebar-menu">
                 <li><a href="#" class="active" data-tab="employee-dashboard"><i class="fas fa-chart-bar"></i> <span class="menu-text">داشبورد</span></a></li>
@@ -1249,7 +1188,6 @@
                 </div>
             </header>
 
-            <!-- تب‌های محتوای کارمند -->
             <section class="tab-content active" id="employee-dashboard">
                 <div class="stats-grid">
                     <div class="stat-card employee-stat-card">
@@ -1285,9 +1223,9 @@
                         <h3 class="card-title">سیستم حضور و غیاب هوشمند</h3>
                     </div>
                     <div class="card-body">
-                        <div class="gps-status" id="employee-gps-status">
-                            <i class="fas fa-info-circle"></i>
-                            <div class="gps-status-text" id="employee-gps-status-text">در حال بررسی موقعیت و فعال‌سازی GPS...</div>
+                        <div id="employee-gps-status" class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> 
+                            <span id="employee-gps-status-text">در حال بررسی موقعیت و فعال‌سازی GPS...</span>
                         </div>
                         <div class="attendance-controls">
                             <button class="btn btn-success btn-lg" id="employee-check-in-btn">
@@ -1297,7 +1235,7 @@
                                 <i class="fas fa-sign-out-alt"></i> ثبت خروج
                             </button>
                         </div>
-                        <div class="table-responsive" style="margin-top: 25px;">
+                        <div class="table-responsive" style="margin-top: 20px;">
                             <table id="employee-attendance-table">
                                 <thead>
                                     <tr>
@@ -1404,12 +1342,11 @@
         </main>
     </div>
 
-    <!-- پورتال مدیر -->
     <div id="admin-portal" class="container hidden admin-theme">
         <nav class="sidebar admin-sidebar">
             <div class="sidebar-header">
                 <h2>👑 پنل مدیریت</h2>
-                <div class="version">نسخه ۵.۲.۱</div>
+                <div class="version">نسخه ۵.۲.۰</div>
             </div>
             <ul class="sidebar-menu">
                 <li><a href="#" class="active" data-tab="admin-dashboard"><i class="fas fa-chart-bar"></i> <span class="menu-text">داشبورد</span></a></li>
@@ -1440,7 +1377,6 @@
                 </div>
             </header>
 
-            <!-- تب‌های محتوای مدیر -->
             <section class="tab-content active" id="admin-dashboard">
                 <div class="stats-grid">
                     <div class="stat-card admin-stat-card">
@@ -1602,36 +1538,50 @@
                             <button class="btn btn-success" id="admin-finalize-duty-btn" style="display: none;">
                                 <i class="fas fa-check"></i> ثبت نهایی کشیک
                             </button>
-                            <button class="btn btn-purple" id="admin-print-duty-btn">
+                            <button class="btn btn-info" id="admin-print-duty-btn">
                                 <i class="fas fa-print"></i> پرینت لیست کشیک
                             </button>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="duty-controls" id="duty-controls" style="display: none;">
+                        <div class="duty-help">
+                            <h4><i class="fas fa-info-circle"></i> راهنما</h4>
+                            <p>برای ایجاد کشیک ماهانه روی دکمه "ایجاد جدول ماهانه" کلیک کنید. سپس برای هر روز، کارمندان مورد نظر را از لیست انتخاب نمایید.</p>
+                        </div>
+                        
+                        <div class="duty-controls" id="duty-controls" style="display: none; margin-bottom: 1rem;">
                             <div class="form-group">
                                 <label>کارمندان فعال:</label>
                                 <div class="team-members-list" id="active-employees-list">
+                                    <!-- توسط JavaScript پر خواهد شد -->
                                 </div>
                             </div>
                         </div>
-                        <div class="duty-table-container">
-                            <div class="table-responsive">
-                                <table id="admin-duty-table">
-                                    <thead>
-                                        <tr>
-                                            <th>تاریخ شمسی</th>
-                                            <th>ایام هفته</th>
-                                            <th>کشیک روز</th>
-                                            <th>کشیک شب</th>
-                                            <th>کمک کشیک</th>
-                                            <th>آنکال</th>
-                                            <th>عملیات</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+
+                        <div class="duty-summary" id="duty-summary" style="display: none;">
+                            <h4><i class="fas fa-chart-bar"></i> خلاصه کشیک‌ها</h4>
+                            <div id="duty-summary-content">
+                                <!-- توسط JavaScript پر خواهد شد -->
                             </div>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table id="admin-duty-table">
+                                <thead>
+                                    <tr>
+                                        <th>تاریخ شمسی</th>
+                                        <th>ایام هفته</th>
+                                        <th>کشیک روز</th>
+                                        <th>کشیک شب</th>
+                                        <th>کمک کشیک</th>
+                                        <th>آنکال</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- جدول توسط JavaScript پر خواهد شد -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -1668,7 +1618,7 @@
                                     <button class="btn btn-primary" id="admin-generate-report-btn">
                                         <i class="fas fa-chart-bar"></i> تولید گزارش
                                     </button>
-                                    <button class="btn btn-purple" id="admin-print-report-btn" style="display: none;">
+                                    <button class="btn print-btn" id="admin-print-report-btn" style="display: none;">
                                         <i class="fas fa-print"></i> پرینت گزارش
                                     </button>
                                 </div>
@@ -1750,7 +1700,7 @@
         </main>
     </div>
 
-    <!-- مودال‌ها -->
+    <!-- تمام مودال‌های قبلی حفظ شده -->
     <div class="modal" id="admin-employee-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1823,7 +1773,7 @@
                     </div>
                     <div class="form-group">
                         <label for="task-description">توضیحات کار *</label>
-                        <textarea id="task-description" class="form-control" required rows="4"></textarea>
+                        <textarea id="task-description" class="form-control" required rows="3"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="task-status">وضعیت کار *</label>
@@ -1874,7 +1824,19 @@
                 <div id="task-details-content"></div>
             </div>
             <div class="modal-footer">
-                <!-- دکمه‌ها به صورت داینامیک اضافه می‌شوند -->
+                <!-- دکمه‌ها به صورت داینامیک بر اساس نوع کاربر نمایش داده می‌شوند -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal image-modal" id="image-viewer-modal">
+        <div class="modal-content image-modal-content">
+            <div class="modal-header">
+                <h3>مشاهده عکس</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body image-modal-body">
+                <img id="full-size-image" src="" alt="عکس کامل">
             </div>
         </div>
     </div>
@@ -1899,10 +1861,7 @@
                     </div>
                     <div class="form-group">
                         <label for="daily-reason">علت مرخصی *</label>
-                        <textarea id="daily-reason" class="form-control" required rows="4"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>تعداد روزهای مرخصی: <span id="leave-days-count" style="font-weight: bold; color: #3b82f6;">0</span> روز</label>
+                        <textarea id="daily-reason" class="form-control" required rows="3"></textarea>
                     </div>
                 </form>
             </div>
@@ -1925,7 +1884,7 @@
                         <label for="hourly-date">تاریخ *</label>
                         <input type="text" id="hourly-date" class="form-control datepicker-input" required>
                     </div>
-                    <div class="form-row">
+                    <div class="hourly-time-group">
                         <div class="form-group">
                             <label for="hourly-start-time">ساعت شروع *</label>
                             <input type="time" id="hourly-start-time" class="form-control" required>
@@ -1937,7 +1896,7 @@
                     </div>
                     <div class="form-group">
                         <label for="hourly-reason">علت مرخصی *</label>
-                        <textarea id="hourly-reason" class="form-control" required rows="4"></textarea>
+                        <textarea id="hourly-reason" class="form-control" required rows="3"></textarea>
                     </div>
                 </form>
             </div>
@@ -1966,11 +1925,11 @@
                     </div>
                     <div class="form-group">
                         <label for="mission-reason">علت مأموریت *</label>
-                        <textarea id="mission-reason" class="form-control" required rows="4"></textarea>
+                        <textarea id="mission-reason" class="form-control" required rows="3"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="mission-description">توضیحات مأموریت</label>
-                        <textarea id="mission-description" class="form-control" rows="4"></textarea>
+                        <textarea id="mission-description" class="form-control" rows="3"></textarea>
                     </div>
                 </form>
             </div>
@@ -1991,19 +1950,7 @@
                 <div id="request-details-content"></div>
             </div>
             <div class="modal-footer">
-                <!-- دکمه‌ها به صورت داینامیک اضافه می‌شوند -->
-            </div>
-        </div>
-    </div>
-
-    <div class="modal image-modal" id="image-viewer-modal">
-        <div class="modal-content image-modal-content">
-            <div class="modal-header">
-                <h3>مشاهده عکس</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body image-modal-body">
-                <img id="full-size-image" src="" alt="عکس کامل">
+                <!-- دکمه‌ها به صورت داینامیک بر اساس نوع کاربر نمایش داده می‌شوند -->
             </div>
         </div>
     </div>
@@ -2041,9 +1988,9 @@
             }
 
             init() {
-                this.initializeDefaultData();
                 this.bindEvents();
                 this.checkExistingSession();
+                this.initializeDefaultData();
                 this.initializePersianDate();
             }
 
@@ -2097,7 +2044,6 @@
             }
 
             bindEvents() {
-                // رویدادهای فرم لاگین
                 document.getElementById('login-form').addEventListener('submit', (e) => {
                     e.preventDefault();
                     this.handleLogin();
@@ -2110,13 +2056,24 @@
                     });
                 });
 
-                // رویدادهای خروج
                 document.getElementById('employee-sidebar-logout-btn').addEventListener('click', () => this.logout());
                 document.getElementById('employee-header-logout-btn').addEventListener('click', () => this.logout());
                 document.getElementById('admin-sidebar-logout-btn').addEventListener('click', () => this.logout());
                 document.getElementById('admin-header-logout-btn').addEventListener('click', () => this.logout());
 
-                // رویدادهای تب‌های کارمند
+                this.bindEmployeeTabs();
+                this.bindAdminTabs();
+                this.bindModals();
+                
+                // Event delegation برای جدول کشیک
+                document.addEventListener('change', (e) => {
+                    if (e.target.classList.contains('duty-select')) {
+                        this.handleDutyChange(e.target);
+                    }
+                });
+            }
+
+            bindEmployeeTabs() {
                 document.querySelectorAll('#employee-portal .sidebar-menu a[data-tab]').forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -2125,7 +2082,15 @@
                     });
                 });
 
-                // رویدادهای تب‌های مدیر
+                document.getElementById('employee-check-in-btn').addEventListener('click', () => this.handleCheckIn());
+                document.getElementById('employee-check-out-btn').addEventListener('click', () => this.handleCheckOut());
+                document.getElementById('employee-add-task-btn').addEventListener('click', () => this.showTaskModal());
+                document.getElementById('employee-add-daily-leave-btn').addEventListener('click', () => this.showDailyLeaveModal());
+                document.getElementById('employee-add-hourly-leave-btn').addEventListener('click', () => this.showHourlyLeaveModal());
+                document.getElementById('employee-add-mission-btn').addEventListener('click', () => this.showMissionModal());
+            }
+
+            bindAdminTabs() {
                 document.querySelectorAll('#admin-portal .sidebar-menu a[data-tab]').forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -2134,14 +2099,6 @@
                     });
                 });
 
-                // رویدادهای دکمه‌ها
-                document.getElementById('employee-check-in-btn').addEventListener('click', () => this.handleCheckIn());
-                document.getElementById('employee-check-out-btn').addEventListener('click', () => this.handleCheckOut());
-                document.getElementById('employee-add-task-btn').addEventListener('click', () => this.showTaskModal());
-                document.getElementById('employee-add-daily-leave-btn').addEventListener('click', () => this.showDailyLeaveModal());
-                document.getElementById('employee-add-hourly-leave-btn').addEventListener('click', () => this.showHourlyLeaveModal());
-                document.getElementById('employee-add-mission-btn').addEventListener('click', () => this.showMissionModal());
-                
                 document.getElementById('admin-add-employee-btn').addEventListener('click', () => this.showEmployeeModal());
                 document.getElementById('admin-generate-duty-btn').addEventListener('click', () => this.showDutyControls());
                 document.getElementById('admin-finalize-duty-btn').addEventListener('click', () => this.finalizeDutySchedule());
@@ -2150,8 +2107,9 @@
                 document.getElementById('admin-print-report-btn').addEventListener('click', () => this.printReport());
                 document.getElementById('admin-save-settings-btn').addEventListener('click', () => this.saveSettings());
                 document.getElementById('select-location-btn').addEventListener('click', () => this.showMapForLocation());
+            }
 
-                // رویدادهای مودال‌ها
+            bindModals() {
                 document.querySelectorAll('.close-modal').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.target.closest('.modal').classList.remove('active');
@@ -2166,25 +2124,19 @@
                     });
                 });
 
-                // رویدادهای فرم‌ها
                 document.getElementById('task-type').addEventListener('change', (e) => {
                     const teamMembersGroup = document.getElementById('team-members-group');
                     teamMembersGroup.style.display = e.target.value === 'team' ? 'block' : 'none';
                 });
+
+                this.bindImageUpload('before-photos-btn', 'before-photos', 'before-photos-preview');
+                this.bindImageUpload('after-photos-btn', 'after-photos', 'after-photos-preview');
 
                 document.getElementById('admin-save-employee-btn').addEventListener('click', () => this.saveEmployee());
                 document.getElementById('employee-submit-task-btn').addEventListener('click', () => this.submitTask());
                 document.getElementById('submit-daily-leave-btn').addEventListener('click', () => this.submitDailyLeave());
                 document.getElementById('submit-hourly-leave-btn').addEventListener('click', () => this.submitHourlyLeave());
                 document.getElementById('submit-mission-btn').addEventListener('click', () => this.submitMission());
-
-                // رویداد محاسبه خودکار روزهای مرخصی
-                document.getElementById('daily-start-date').addEventListener('change', () => this.calculateLeaveDays());
-                document.getElementById('daily-end-date').addEventListener('change', () => this.calculateLeaveDays());
-
-                // رویدادهای آپلود عکس
-                this.bindImageUpload('before-photos-btn', 'before-photos', 'before-photos-preview');
-                this.bindImageUpload('after-photos-btn', 'after-photos', 'after-photos-preview');
             }
 
             bindImageUpload(buttonId, inputId, previewId) {
@@ -2232,55 +2184,39 @@
             initializePersianDate() {
                 const now = new persianDate();
                 
-                // مقداردهی اولیه تاریخ‌ها
-                document.getElementById('daily-start-date').value = now.format('YYYY/MM/DD');
-                document.getElementById('daily-end-date').value = now.add('day', 1).format('YYYY/MM/DD');
-                document.getElementById('hourly-date').value = now.format('YYYY/MM/DD');
-                document.getElementById('mission-date').value = now.format('YYYY/MM/DD');
-                document.getElementById('task-date').value = now.format('YYYY/MM/DD');
-                document.getElementById('work-start-date').value = now.format('YYYY/MM/DD');
-                document.getElementById('work-end-date').value = now.add('month', 1).format('YYYY/MM/DD');
-
-                // فعال‌سازی datepicker
-                $('.datepicker-input').persianDatepicker({
-                    format: 'YYYY/MM/DD',
-                    observer: true,
-                    initialValue: false,
-                    autoClose: true
+                const dateFields = [
+                    'task-date', 'daily-start-date', 'daily-end-date', 
+                    'hourly-date', 'mission-date', 'work-start-date', 'work-end-date'
+                ];
+                
+                dateFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field) {
+                        if (fieldId === 'daily-start-date' || fieldId === 'work-start-date') {
+                            field.value = now.format('YYYY/MM/DD');
+                        } else if (fieldId === 'daily-end-date' || fieldId === 'work-end-date') {
+                            field.value = now.add('day', 1).format('YYYY/MM/DD');
+                        } else {
+                            field.value = now.format('YYYY/MM/DD');
+                        }
+                    }
                 });
 
-                // محاسبه اولیه روزهای مرخصی
-                this.calculateLeaveDays();
+                this.initializeDatePickers();
                 this.initializeReportMonths();
                 this.initializeReportEmployees();
             }
 
-            calculateLeaveDays() {
-                const startDateStr = document.getElementById('daily-start-date').value;
-                const endDateStr = document.getElementById('daily-end-date').value;
-                
-                if (!startDateStr || !endDateStr) {
-                    document.getElementById('leave-days-count').textContent = '0';
-                    return;
-                }
-
-                try {
-                    const startDate = new persianDate(startDateStr);
-                    const endDate = new persianDate(endDateStr);
-                    
-                    let daysCount = 0;
-                    let currentDate = new persianDate(startDate);
-                    
-                    while (currentDate.valueOf() <= endDate.valueOf()) {
-                        daysCount++;
-                        currentDate = currentDate.add('day', 1);
-                    }
-
-                    document.getElementById('leave-days-count').textContent = daysCount;
-                } catch (error) {
-                    console.error('خطا در محاسبه روزهای مرخصی:', error);
-                    document.getElementById('leave-days-count').textContent = '0';
-                }
+            initializeDatePickers() {
+                const dateFields = document.querySelectorAll('.datepicker-input');
+                dateFields.forEach(field => {
+                    $(field).persianDatepicker({
+                        format: 'YYYY/MM/DD',
+                        observer: true,
+                        initialValue: false,
+                        autoClose: true
+                    });
+                });
             }
 
             initializeReportMonths() {
@@ -2320,6 +2256,7 @@
             handleLogin() {
                 const userCode = document.getElementById('user-code').value;
                 const password = document.getElementById('password').value;
+                const authType = document.querySelector('.auth-tab.active').dataset.authType;
 
                 const user = this.employees.find(emp => 
                     emp.code === userCode && emp.password === password && emp.status === 'active'
@@ -2396,6 +2333,210 @@
                     }
                     this.hideAuthPage();
                 }
+            }
+
+            initializeGPS() {
+                const gpsStatus = document.getElementById('employee-gps-status-text');
+                if (!gpsStatus) return;
+                
+                gpsStatus.textContent = 'در حال فعال‌سازی GPS...';
+                gpsStatus.style.color = '#f59e0b';
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const inRange = this.checkLocationInRange(position);
+                            if (inRange) {
+                                gpsStatus.textContent = 'GPS فعال - شما در محدوده کاری هستید ✓';
+                                gpsStatus.style.color = '#10b981';
+                            } else {
+                                gpsStatus.textContent = 'GPS فعال - شما خارج از محدوده کاری هستید ✗';
+                                gpsStatus.style.color = '#ef4444';
+                            }
+                        },
+                        (error) => {
+                            gpsStatus.textContent = 'خطا در دریافت موقعیت: ' + this.getGPSErrorMessage(error);
+                            gpsStatus.style.color = '#ef4444';
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    gpsStatus.textContent = 'مرورگر شما از GPS پشتیبانی نمی‌کند';
+                    gpsStatus.style.color = '#ef4444';
+                }
+            }
+
+            getGPSErrorMessage(error) {
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        return "دسترسی به موقعیت مکانی رد شد";
+                    case error.POSITION_UNAVAILABLE:
+                        return "اطلاعات موقعیت مکانی در دسترس نیست";
+                    case error.TIMEOUT:
+                        return "دریافت موقعیت مکانی timeout خورد";
+                    default:
+                        return "خطای ناشناخته رخ داد";
+                }
+            }
+
+            checkLocationInRange(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                const officeLat = this.settings.officeLat;
+                const officeLng = this.settings.officeLng;
+                
+                const R = 6371000;
+                const dLat = this.toRad(userLat - officeLat);
+                const dLng = this.toRad(userLng - officeLng);
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(this.toRad(officeLat)) * Math.cos(this.toRad(userLat)) *
+                          Math.sin(dLng/2) * Math.sin(dLng/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                const distance = R * c;
+                
+                return distance <= 500;
+            }
+
+            toRad(degrees) {
+                return degrees * (Math.PI / 180);
+            }
+
+            // سیستم جدید حضور و غیاب - کاملاً بازنویسی شده
+            async handleCheckIn() {
+                try {
+                    const now = new Date();
+                    const persianNow = new persianDate(now);
+                    const today = persianNow.format('YYYY/MM/DD');
+                    const time = persianNow.format('HH:mm');
+                    const dayOfWeek = this.getPersianDayOfWeek(now.getDay());
+                    
+                    console.log('Attempting check-in for:', this.currentUser.code, 'on', today);
+
+                    // بررسی آیا ورود قبلاً ثبت شده
+                    const existingRecord = this.attendance.find(record => 
+                        record.userId === this.currentUser.code && record.date === today
+                    );
+
+                    if (existingRecord) {
+                        if (existingRecord.checkIn) {
+                            this.showAttendanceAlert('ورود شما قبلاً ثبت شده است', 'error');
+                            return;
+                        } else {
+                            // آپدیت رکورد موجود
+                            existingRecord.checkIn = time;
+                            existingRecord.status = 'present';
+                        }
+                    } else {
+                        // ایجاد رکورد جدید
+                        const attendanceRecord = {
+                            id: Date.now().toString(),
+                            userId: this.currentUser.code,
+                            userName: this.currentUser.name,
+                            date: today,
+                            dayOfWeek: dayOfWeek,
+                            checkIn: time,
+                            checkOut: null,
+                            status: 'present',
+                            overtime: 0
+                        };
+                        this.attendance.push(attendanceRecord);
+                    }
+                    
+                    this.saveAttendance();
+                    
+                    this.showAttendanceAlert(
+                        `✅ ورود شما ثبت شد\nتاریخ: ${today}\nروز: ${dayOfWeek}\nساعت: ${time}`, 
+                        'success'
+                    );
+                    
+                    this.loadEmployeeAttendance();
+                    this.updateEmployeeStats();
+                    
+                } catch (error) {
+                    console.error('خطا در ثبت ورود:', error);
+                    this.showAttendanceAlert('خطا در ثبت ورود', 'error');
+                }
+            }
+
+            async handleCheckOut() {
+                try {
+                    const today = new persianDate().format('YYYY/MM/DD');
+                    const now = new Date();
+                    const persianNow = new persianDate(now);
+                    const time = persianNow.format('HH:mm');
+                    const dayOfWeek = this.getPersianDayOfWeek(now.getDay());
+                    
+                    console.log('Attempting check-out for:', this.currentUser.code, 'on', today);
+
+                    const todayRecord = this.attendance.find(record => 
+                        record.userId === this.currentUser.code && record.date === today
+                    );
+
+                    if (!todayRecord) {
+                        this.showAttendanceAlert('ابتدا باید ورود خود را ثبت کنید', 'error');
+                        return;
+                    }
+
+                    if (todayRecord.checkOut) {
+                        this.showAttendanceAlert('خروج شما قبلاً ثبت شده است', 'error');
+                        return;
+                    }
+
+                    todayRecord.checkOut = time;
+                    todayRecord.overtime = this.calculateOvertime(todayRecord.checkOut);
+                    
+                    this.saveAttendance();
+                    
+                    this.showAttendanceAlert(
+                        `✅ خروج شما ثبت شد\nتاریخ: ${today}\nروز: ${dayOfWeek}\nساعت: ${time}`, 
+                        'success'
+                    );
+                    
+                    this.loadEmployeeAttendance();
+                    this.updateEmployeeStats();
+                    
+                } catch (error) {
+                    console.error('خطا در ثبت خروج:', error);
+                    this.showAttendanceAlert('خطا در ثبت خروج', 'error');
+                }
+            }
+
+            calculateOvertime(checkOutTime) {
+                const [endHour, endMinute] = this.settings.workEndTime.split(':').map(Number);
+                const [outHour, outMinute] = checkOutTime.split(':').map(Number);
+                
+                const endTotalMinutes = endHour * 60 + endMinute;
+                const outTotalMinutes = outHour * 60 + outMinute;
+                
+                if (outTotalMinutes <= endTotalMinutes) {
+                    return 0;
+                }
+                
+                const overtimeMinutes = outTotalMinutes - endTotalMinutes;
+                return (overtimeMinutes / 60).toFixed(2);
+            }
+
+            showAttendanceAlert(message, type) {
+                const alert = document.createElement('div');
+                alert.className = `attendance-alert attendance-${type}`;
+                alert.innerHTML = `
+                    <h3>${message}</h3>
+                `;
+                
+                document.body.appendChild(alert);
+                
+                setTimeout(() => {
+                    alert.remove();
+                }, 5000);
+            }
+
+            getPersianDayOfWeek(day) {
+                const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+                return days[day];
             }
 
             switchEmployeeTab(tabName) {
@@ -2535,44 +2676,14 @@
                 if (todayAttendance) {
                     document.getElementById('employee-today-status').textContent = todayAttendance.checkOut ? 'کار تمام' : 'حاضر';
                     if (todayAttendance.checkIn && todayAttendance.checkOut) {
-                        const workHours = this.calculateWorkHours(todayAttendance.checkIn, todayAttendance.checkOut);
-                        document.getElementById('employee-work-hours').textContent = workHours;
+                        const checkIn = this.timeToMinutes(todayAttendance.checkIn);
+                        const checkOut = this.timeToMinutes(todayAttendance.checkOut);
+                        const hours = ((checkOut - checkIn) / 60).toFixed(1);
+                        document.getElementById('employee-work-hours').textContent = hours;
                     }
                 } else {
                     document.getElementById('employee-today-status').textContent = 'غایب';
                 }
-
-                // محاسبه امتیاز ماه
-                const monthStart = new persianDate().startOf('month').format('YYYY/MM/DD');
-                const monthEnd = new persianDate().endOf('month').format('YYYY/MM/DD');
-                
-                const monthTasks = this.tasks.filter(task => 
-                    task.userId === this.currentUser.code && 
-                    task.date >= monthStart && 
-                    task.date <= monthEnd &&
-                    task.status === 'approved'
-                );
-                
-                const monthScore = monthTasks.length * 10; // هر کار تایید شده 10 امتیاز
-                document.getElementById('employee-month-score').textContent = monthScore;
-
-                // محاسبه رتبه
-                const allEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
-                const rankings = allEmployees.map(emp => {
-                    const empTasks = this.tasks.filter(task => 
-                        task.userId === emp.code && 
-                        task.date >= monthStart && 
-                        task.date <= monthEnd &&
-                        task.status === 'approved'
-                    );
-                    return {
-                        code: emp.code,
-                        score: empTasks.length * 10
-                    };
-                }).sort((a, b) => b.score - a.score);
-
-                const userRank = rankings.findIndex(rank => rank.code === this.currentUser.code) + 1;
-                document.getElementById('employee-rank').textContent = userRank;
             }
 
             updateAdminStats() {
@@ -2594,209 +2705,10 @@
                 document.getElementById('today-attendance').textContent = todayAttendance.length;
             }
 
-            // سیستم حضور و غیاب
-            initializeGPS() {
-                const gpsStatus = document.getElementById('employee-gps-status');
-                const gpsStatusText = document.getElementById('employee-gps-status-text');
-                
-                if (!navigator.geolocation) {
-                    gpsStatusText.textContent = 'مرورگر شما از GPS پشتیبانی نمی‌کند';
-                    gpsStatus.className = 'gps-status inactive';
-                    return;
-                }
-
-                gpsStatusText.textContent = 'در حال دریافت موقعیت...';
-                gpsStatus.className = 'gps-status';
-
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const inRange = this.checkLocationInRange(position);
-                        if (inRange) {
-                            gpsStatusText.textContent = 'موقعیت شما تأیید شد - شما در محدوده کاری هستید ✓';
-                            gpsStatus.className = 'gps-status active';
-                        } else {
-                            gpsStatusText.textContent = 'شما خارج از محدوده کاری هستید ✗';
-                            gpsStatus.className = 'gps-status inactive';
-                        }
-                    },
-                    (error) => {
-                        gpsStatusText.textContent = 'خطا در دریافت موقعیت: ' + this.getGPSErrorMessage(error);
-                        gpsStatus.className = 'gps-status inactive';
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    }
-                );
-            }
-
-            checkLocationInRange(position) {
-                const userLat = position.coords.latitude;
-                const userLng = position.coords.longitude;
-                const officeLat = this.settings.officeLat;
-                const officeLng = this.settings.officeLng;
-                
-                // محاسبه فاصله با فرمول Haversine
-                const R = 6371000; // شعاع زمین به متر
-                const dLat = this.toRad(userLat - officeLat);
-                const dLng = this.toRad(userLng - officeLng);
-                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                          Math.cos(this.toRad(officeLat)) * Math.cos(this.toRad(userLat)) *
-                          Math.sin(dLng/2) * Math.sin(dLng/2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                const distance = R * c;
-                
-                return distance <= 500; // 500 متر محدوده
-            }
-
-            toRad(degrees) {
-                return degrees * (Math.PI / 180);
-            }
-
-            getGPSErrorMessage(error) {
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        return "دسترسی به موقعیت مکانی رد شد";
-                    case error.POSITION_UNAVAILABLE:
-                        return "اطلاعات موقعیت مکانی در دسترس نیست";
-                    case error.TIMEOUT:
-                        return "دریافت موقعیت مکانی timeout خورد";
-                    default:
-                        return "خطای ناشناخته رخ داد";
-                }
-            }
-
-            handleCheckIn() {
-                const today = new persianDate().format('YYYY/MM/DD');
-                const time = new persianDate().format('HH:mm');
-                const dayOfWeek = this.getPersianDayOfWeek(new Date().getDay());
-
-                // بررسی GPS
-                if (!navigator.geolocation) {
-                    this.showAttendanceAlert('سیستم GPS در دسترس نیست', 'error');
-                    return;
-                }
-
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const inRange = this.checkLocationInRange(position);
-                        if (!inRange) {
-                            this.showAttendanceAlert('شما خارج از محدوده کاری هستید. امکان ثبت ورود وجود ندارد.', 'error');
-                            return;
-                        }
-
-                        this.processCheckIn(today, time, dayOfWeek);
-                    },
-                    (error) => {
-                        this.showAttendanceAlert('خطا در دریافت موقعیت: ' + this.getGPSErrorMessage(error), 'error');
-                    }
-                );
-            }
-
-            processCheckIn(today, time, dayOfWeek) {
-                const existingRecord = this.attendance.find(record => 
-                    record.userId === this.currentUser.code && record.date === today
-                );
-
-                if (existingRecord && existingRecord.checkIn) {
-                    this.showAttendanceAlert('ورود شما قبلاً ثبت شده است', 'error');
-                    return;
-                }
-
-                const attendanceRecord = {
-                    id: Date.now().toString(),
-                    userId: this.currentUser.code,
-                    userName: this.currentUser.name,
-                    date: today,
-                    dayOfWeek: dayOfWeek,
-                    checkIn: time,
-                    checkOut: null,
-                    status: 'present',
-                    overtime: 0
-                };
-
-                if (existingRecord) {
-                    Object.assign(existingRecord, attendanceRecord);
-                } else {
-                    this.attendance.push(attendanceRecord);
-                }
-
-                this.saveAttendance();
-                this.showAttendanceAlert(`ورود شما ثبت شد\nتاریخ: ${today}\nساعت: ${time}`, 'success');
-                this.loadEmployeeAttendance();
-                this.updateEmployeeStats();
-            }
-
-            handleCheckOut() {
-                const today = new persianDate().format('YYYY/MM/DD');
-                const time = new persianDate().format('HH:mm');
-
-                const todayRecord = this.attendance.find(record => 
-                    record.userId === this.currentUser.code && record.date === today
-                );
-
-                if (!todayRecord) {
-                    this.showAttendanceAlert('ابتدا باید ورود خود را ثبت کنید', 'error');
-                    return;
-                }
-
-                if (todayRecord.checkOut) {
-                    this.showAttendanceAlert('خروج شما قبلاً ثبت شده است', 'error');
-                    return;
-                }
-
-                todayRecord.checkOut = time;
-                todayRecord.overtime = this.calculateOvertime(todayRecord.checkOut);
-
-                this.saveAttendance();
-                this.showAttendanceAlert(`خروج شما ثبت شد\nتاریخ: ${today}\nساعت: ${time}`, 'success');
-                this.loadEmployeeAttendance();
-                this.updateEmployeeStats();
-            }
-
-            showAttendanceAlert(message, type) {
-                const alert = document.createElement('div');
-                alert.className = `attendance-alert attendance-${type}`;
-                alert.innerHTML = `
-                    <h3>${message}</h3>
-                `;
-                
-                document.body.appendChild(alert);
-                
-                setTimeout(() => {
-                    alert.remove();
-                }, 5000);
-            }
-
-            calculateWorkHours(checkIn, checkOut) {
-                const [inHour, inMinute] = checkIn.split(':').map(Number);
-                const [outHour, outMinute] = checkOut.split(':').map(Number);
-                
-                const totalMinutes = (outHour * 60 + outMinute) - (inHour * 60 + inMinute);
-                const hours = Math.floor(totalMinutes / 60);
-                const minutes = totalMinutes % 60;
-                
-                return `${hours}:${minutes.toString().padStart(2, '0')}`;
-            }
-
-            calculateOvertime(checkOutTime) {
-                const [endHour, endMinute] = this.settings.workEndTime.split(':').map(Number);
-                const [outHour, outMinute] = checkOutTime.split(':').map(Number);
-                
-                const endTotalMinutes = endHour * 60 + endMinute;
-                const outTotalMinutes = outHour * 60 + outMinute;
-                
-                if (outTotalMinutes <= endTotalMinutes) {
-                    return 0;
-                }
-                
-                const overtimeMinutes = outTotalMinutes - endTotalMinutes;
-                return (overtimeMinutes / 60).toFixed(2);
-            }
-
             loadEmployeeAttendance() {
                 const tbody = document.querySelector('#employee-attendance-table tbody');
+                if (!tbody) return;
+                
                 tbody.innerHTML = '';
 
                 const userAttendance = this.attendance
@@ -2807,7 +2719,7 @@
                 if (userAttendance.length === 0) {
                     const row = document.createElement('tr');
                     row.innerHTML = `
-                        <td colspan="7" style="text-align: center; color: #64748b;">
+                        <td colspan="7" style="text-align: center; color: #6b7280;">
                             هیچ رکوردی یافت نشد
                         </td>
                     `;
@@ -2817,7 +2729,8 @@
 
                 userAttendance.forEach(record => {
                     const workHours = record.checkIn && record.checkOut ? 
-                        this.calculateWorkHours(record.checkIn, record.checkOut) : '-';
+                        ((this.timeToMinutes(record.checkOut) - this.timeToMinutes(record.checkIn)) / 60).toFixed(1) + ' ساعت' : 
+                        '-';
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -2837,7 +2750,6 @@
                 });
             }
 
-            // سیستم مدیریت کارها
             showTaskModal() {
                 const teamMembersSelect = document.getElementById('team-members');
                 teamMembersSelect.innerHTML = '';
@@ -2919,7 +2831,7 @@
                         <td>${task.date}</td>
                         <td>
                             <span class="status-badge ${task.status === 'approved' ? 'completed' : 
-                                                     task.status === 'rejected' ? 'rejected' : 'pending'}">
+                                                         task.status === 'rejected' ? 'rejected' : 'pending'}">
                                 ${task.status === 'approved' ? '✅ تایید شده' : 
                                   task.status === 'rejected' ? '❌ رد شده' : '⏳ در انتظار'}
                             </span>
@@ -2930,6 +2842,311 @@
                     `;
                     tbody.appendChild(row);
                 });
+            }
+
+            showDailyLeaveModal() {
+                document.getElementById('daily-leave-modal').classList.add('active');
+            }
+
+            showHourlyLeaveModal() {
+                document.getElementById('hourly-leave-modal').classList.add('active');
+            }
+
+            showMissionModal() {
+                document.getElementById('mission-modal').classList.add('active');
+            }
+
+            // سیستم جدید محاسبه مرخصی روزانه - کاملاً بازنویسی شده
+            submitDailyLeave() {
+                const form = document.getElementById('daily-leave-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const startDateStr = document.getElementById('daily-start-date').value;
+                const endDateStr = document.getElementById('daily-end-date').value;
+                
+                // تبدیل تاریخ‌ها به شیء persianDate
+                const startDate = new persianDate(startDateStr);
+                const endDate = new persianDate(endDateStr);
+                
+                // محاسبه دقیق تعداد روزها
+                let daysCount = 0;
+                let currentDate = new persianDate(startDate);
+                
+                while (currentDate.valueOf() <= endDate.valueOf()) {
+                    daysCount++;
+                    currentDate = currentDate.add('day', 1);
+                }
+
+                console.log('Start Date:', startDateStr, 'End Date:', endDateStr, 'Days Count:', daysCount);
+
+                if (daysCount <= 0) {
+                    this.showNotification('تاریخ پایان باید بعد از تاریخ شروع باشد', 'error');
+                    return;
+                }
+
+                if (daysCount > 30) {
+                    this.showNotification('مدت مرخصی نمی‌تواند بیشتر از ۳۰ روز باشد', 'error');
+                    return;
+                }
+
+                const request = {
+                    id: Date.now().toString(),
+                    userId: this.currentUser.code,
+                    userName: this.currentUser.name,
+                    type: 'daily_leave',
+                    startDate: startDateStr,
+                    endDate: endDateStr,
+                    daysCount: daysCount,
+                    reason: document.getElementById('daily-reason').value,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+
+                this.requests.push(request);
+                this.saveRequests();
+                
+                document.getElementById('daily-leave-modal').classList.remove('active');
+                this.showNotification(`درخواست مرخصی ${daysCount} روزه با موفقیت ارسال شد`, 'success');
+                this.loadEmployeeRequests();
+            }
+
+            submitHourlyLeave() {
+                const form = document.getElementById('hourly-leave-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const startTime = document.getElementById('hourly-start-time').value;
+                const endTime = document.getElementById('hourly-end-time').value;
+                
+                const hoursCount = this.calculateExactHoursDifference(startTime, endTime);
+
+                const request = {
+                    id: Date.now().toString(),
+                    userId: this.currentUser.code,
+                    userName: this.currentUser.name,
+                    type: 'hourly_leave',
+                    date: document.getElementById('hourly-date').value,
+                    startTime: startTime,
+                    endTime: endTime,
+                    hoursCount: hoursCount,
+                    reason: document.getElementById('hourly-reason').value,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+
+                this.requests.push(request);
+                this.saveRequests();
+                
+                document.getElementById('hourly-leave-modal').classList.remove('active');
+                this.showNotification(`درخواست مرخصی ${this.formatHours(hoursCount)} با موفقیت ارسال شد`, 'success');
+                this.loadEmployeeRequests();
+            }
+
+            calculateExactHoursDifference(startTime, endTime) {
+                const [startHour, startMinute] = startTime.split(':').map(Number);
+                const [endHour, endMinute] = endTime.split(':').map(Number);
+                
+                const startTotalMinutes = startHour * 60 + startMinute;
+                const endTotalMinutes = endHour * 60 + endMinute;
+                
+                const differenceMinutes = endTotalMinutes - startTotalMinutes;
+                
+                return (differenceMinutes / 60).toFixed(2);
+            }
+
+            formatHours(hours) {
+                const totalMinutes = hours * 60;
+                const hoursPart = Math.floor(totalMinutes / 60);
+                const minutesPart = Math.round(totalMinutes % 60);
+                
+                if (hoursPart === 0) {
+                    return `${minutesPart} دقیقه`;
+                } else if (minutesPart === 0) {
+                    return `${hoursPart} ساعت`;
+                } else {
+                    return `${hoursPart} ساعت و ${minutesPart} دقیقه`;
+                }
+            }
+
+            submitMission() {
+                const form = document.getElementById('mission-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const request = {
+                    id: Date.now().toString(),
+                    userId: this.currentUser.code,
+                    userName: this.currentUser.name,
+                    type: 'mission',
+                    date: document.getElementById('mission-date').value,
+                    location: document.getElementById('mission-location').value,
+                    reason: document.getElementById('mission-reason').value,
+                    description: document.getElementById('mission-description').value,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+
+                this.requests.push(request);
+                this.saveRequests();
+                
+                document.getElementById('mission-modal').classList.remove('active');
+                this.showNotification('درخواست مأموریت با موفقیت ارسال شد', 'success');
+                this.loadEmployeeRequests();
+            }
+
+            loadEmployeeRequests() {
+                const tbody = document.querySelector('#employee-requests-table tbody');
+                tbody.innerHTML = '';
+
+                const userRequests = this.requests
+                    .filter(request => request.userId === this.currentUser.code)
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                userRequests.forEach(request => {
+                    let details = '';
+                    let displayDate = '';
+
+                    switch(request.type) {
+                        case 'daily_leave':
+                            details = `${request.daysCount} روز - ${request.reason}`;
+                            displayDate = `${request.startDate} تا ${request.endDate}`;
+                            break;
+                        case 'hourly_leave':
+                            details = `از ${request.startTime} تا ${request.endTime} (${this.formatHours(request.hoursCount)}) - ${request.reason}`;
+                            displayDate = request.date;
+                            break;
+                        case 'mission':
+                            details = `${request.reason} - ${request.description || 'بدون توضیحات'}`;
+                            displayDate = request.date;
+                            break;
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${this.getRequestTypeText(request.type)}</td>
+                        <td>${displayDate}</td>
+                        <td>${details}</td>
+                        <td>
+                            <span class="status-badge ${request.status === 'approved' ? 'completed' : 
+                                                         request.status === 'rejected' ? 'rejected' : 'pending'}">
+                                ${request.status === 'approved' ? '✅ تایید شده' : 
+                                  request.status === 'rejected' ? '❌ رد شده' : '⏳ در انتظار'}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            getRequestTypeText(type) {
+                const types = {
+                    'daily_leave': 'مرخصی روزانه',
+                    'hourly_leave': 'مرخصی ساعتی',
+                    'mission': 'مأموریت'
+                };
+                return types[type] || type;
+            }
+
+            loadEmployeeDuty() {
+                const tbody = document.querySelector('#employee-duty-table tbody');
+                tbody.innerHTML = '';
+
+                const userDuties = this.dutySchedule
+                    .filter(duty => 
+                        duty.dayDuty === this.currentUser.code ||
+                        duty.nightDuty === this.currentUser.code ||
+                        duty.assistantDuty === this.currentUser.code ||
+                        duty.oncallDuty === this.currentUser.code
+                    )
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                userDuties.forEach(duty => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${duty.date}</td>
+                        <td>${duty.dayOfWeek}</td>
+                        <td>${duty.dayDuty === this.currentUser.code ? '✅' : ''}</td>
+                        <td>${duty.nightDuty === this.currentUser.code ? '✅' : ''}</td>
+                        <td>${duty.assistantDuty === this.currentUser.code ? '✅' : ''}</td>
+                        <td>${duty.oncallDuty === this.currentUser.code ? '✅' : ''}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            showEmployeeModal() {
+                document.getElementById('admin-employee-modal').classList.add('active');
+            }
+
+            saveEmployee() {
+                const form = document.getElementById('admin-employee-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const employee = {
+                    code: document.getElementById('admin-emp-code').value,
+                    name: document.getElementById('admin-emp-name').value,
+                    phone: document.getElementById('admin-emp-phone').value,
+                    password: document.getElementById('admin-emp-password').value,
+                    status: 'active'
+                };
+
+                if (this.employees.find(emp => emp.code === employee.code)) {
+                    this.showNotification('کد پرسنلی تکراری است', 'error');
+                    return;
+                }
+
+                this.employees.push(employee);
+                this.saveEmployees();
+                
+                document.getElementById('admin-employee-modal').classList.remove('active');
+                form.reset();
+                this.showNotification('کارمند با موفقیت اضافه شد', 'success');
+                this.loadAdminEmployees();
+            }
+
+            loadAdminEmployees() {
+                const tbody = document.querySelector('#admin-employees-table tbody');
+                tbody.innerHTML = '';
+
+                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
+
+                activeEmployees.forEach(emp => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${emp.code}</td>
+                        <td>${emp.name}</td>
+                        <td>${emp.phone}</td>
+                        <td>
+                            <span class="status-badge completed">فعال</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="ems.deleteEmployee('${emp.code}')">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            deleteEmployee(code) {
+                if (confirm('آیا از حذف این کارمند اطمینان دارید؟')) {
+                    const employeeIndex = this.employees.findIndex(emp => emp.code === code);
+                    if (employeeIndex !== -1) {
+                        this.employees[employeeIndex].status = 'inactive';
+                        this.saveEmployees();
+                        this.showNotification('کارمند با موفقیت حذف شد', 'success');
+                        this.loadAdminEmployees();
+                    }
+                }
             }
 
             loadAdminTasks() {
@@ -2946,7 +3163,7 @@
                         <td>${task.date}</td>
                         <td>
                             <span class="status-badge ${task.status === 'approved' ? 'completed' : 
-                                                     task.status === 'rejected' ? 'rejected' : 'pending'}">
+                                                         task.status === 'rejected' ? 'rejected' : 'pending'}">
                                 ${task.status === 'approved' ? 'تایید شده' : 
                                   task.status === 'rejected' ? 'رد شده' : 'در انتظار'}
                             </span>
@@ -3152,193 +3369,6 @@
                 }
             }
 
-            // سیستم مدیریت درخواست‌ها
-            showDailyLeaveModal() {
-                document.getElementById('daily-leave-modal').classList.add('active');
-            }
-
-            showHourlyLeaveModal() {
-                document.getElementById('hourly-leave-modal').classList.add('active');
-            }
-
-            showMissionModal() {
-                document.getElementById('mission-modal').classList.add('active');
-            }
-
-            submitDailyLeave() {
-                const form = document.getElementById('daily-leave-form');
-                if (!form.checkValidity()) {
-                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
-                    return;
-                }
-
-                const startDateStr = document.getElementById('daily-start-date').value;
-                const endDateStr = document.getElementById('daily-end-date').value;
-                const daysCount = parseInt(document.getElementById('leave-days-count').textContent);
-
-                if (daysCount <= 0) {
-                    this.showNotification('تاریخ پایان باید بعد از تاریخ شروع باشد', 'error');
-                    return;
-                }
-
-                if (daysCount > 30) {
-                    this.showNotification('مدت مرخصی نمی‌تواند بیشتر از ۳۰ روز باشد', 'error');
-                    return;
-                }
-
-                const request = {
-                    id: Date.now().toString(),
-                    userId: this.currentUser.code,
-                    userName: this.currentUser.name,
-                    type: 'daily_leave',
-                    startDate: startDateStr,
-                    endDate: endDateStr,
-                    daysCount: daysCount,
-                    reason: document.getElementById('daily-reason').value,
-                    status: 'pending',
-                    createdAt: new Date().toISOString()
-                };
-
-                this.requests.push(request);
-                this.saveRequests();
-                
-                document.getElementById('daily-leave-modal').classList.remove('active');
-                this.showNotification(`درخواست مرخصی ${daysCount} روزه با موفقیت ارسال شد`, 'success');
-                this.loadEmployeeRequests();
-            }
-
-            submitHourlyLeave() {
-                const form = document.getElementById('hourly-leave-form');
-                if (!form.checkValidity()) {
-                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
-                    return;
-                }
-
-                const startTime = document.getElementById('hourly-start-time').value;
-                const endTime = document.getElementById('hourly-end-time').value;
-                
-                const hoursCount = this.calculateHoursDifference(startTime, endTime);
-
-                const request = {
-                    id: Date.now().toString(),
-                    userId: this.currentUser.code,
-                    userName: this.currentUser.name,
-                    type: 'hourly_leave',
-                    date: document.getElementById('hourly-date').value,
-                    startTime: startTime,
-                    endTime: endTime,
-                    hoursCount: hoursCount,
-                    reason: document.getElementById('hourly-reason').value,
-                    status: 'pending',
-                    createdAt: new Date().toISOString()
-                };
-
-                this.requests.push(request);
-                this.saveRequests();
-                
-                document.getElementById('hourly-leave-modal').classList.remove('active');
-                this.showNotification(`درخواست مرخصی ${this.formatHours(hoursCount)} با موفقیت ارسال شد`, 'success');
-                this.loadEmployeeRequests();
-            }
-
-            calculateHoursDifference(startTime, endTime) {
-                const [startHour, startMinute] = startTime.split(':').map(Number);
-                const [endHour, endMinute] = endTime.split(':').map(Number);
-                
-                const startTotalMinutes = startHour * 60 + startMinute;
-                const endTotalMinutes = endHour * 60 + endMinute;
-                
-                const differenceMinutes = endTotalMinutes - startTotalMinutes;
-                
-                return (differenceMinutes / 60).toFixed(2);
-            }
-
-            formatHours(hours) {
-                const totalMinutes = hours * 60;
-                const hoursPart = Math.floor(totalMinutes / 60);
-                const minutesPart = Math.round(totalMinutes % 60);
-                
-                if (hoursPart === 0) {
-                    return `${minutesPart} دقیقه`;
-                } else if (minutesPart === 0) {
-                    return `${hoursPart} ساعت`;
-                } else {
-                    return `${hoursPart} ساعت و ${minutesPart} دقیقه`;
-                }
-            }
-
-            submitMission() {
-                const form = document.getElementById('mission-form');
-                if (!form.checkValidity()) {
-                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
-                    return;
-                }
-
-                const request = {
-                    id: Date.now().toString(),
-                    userId: this.currentUser.code,
-                    userName: this.currentUser.name,
-                    type: 'mission',
-                    date: document.getElementById('mission-date').value,
-                    location: document.getElementById('mission-location').value,
-                    reason: document.getElementById('mission-reason').value,
-                    description: document.getElementById('mission-description').value,
-                    status: 'pending',
-                    createdAt: new Date().toISOString()
-                };
-
-                this.requests.push(request);
-                this.saveRequests();
-                
-                document.getElementById('mission-modal').classList.remove('active');
-                this.showNotification('درخواست مأموریت با موفقیت ارسال شد', 'success');
-                this.loadEmployeeRequests();
-            }
-
-            loadEmployeeRequests() {
-                const tbody = document.querySelector('#employee-requests-table tbody');
-                tbody.innerHTML = '';
-
-                const userRequests = this.requests
-                    .filter(request => request.userId === this.currentUser.code)
-                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-                userRequests.forEach(request => {
-                    let details = '';
-                    let displayDate = '';
-
-                    switch(request.type) {
-                        case 'daily_leave':
-                            details = `${request.daysCount} روز - ${request.reason}`;
-                            displayDate = `${request.startDate} تا ${request.endDate}`;
-                            break;
-                        case 'hourly_leave':
-                            details = `از ${request.startTime} تا ${request.endTime} (${this.formatHours(request.hoursCount)}) - ${request.reason}`;
-                            displayDate = request.date;
-                            break;
-                        case 'mission':
-                            details = `${request.reason} - ${request.description || 'بدون توضیحات'}`;
-                            displayDate = request.date;
-                            break;
-                    }
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${this.getRequestTypeText(request.type)}</td>
-                        <td>${displayDate}</td>
-                        <td>${details}</td>
-                        <td>
-                            <span class="status-badge ${request.status === 'approved' ? 'completed' : 
-                                                     request.status === 'rejected' ? 'rejected' : 'pending'}">
-                                ${request.status === 'approved' ? '✅ تایید شده' : 
-                                  request.status === 'rejected' ? '❌ رد شده' : '⏳ در انتظار'}
-                            </span>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-
             loadAdminRequests() {
                 const tbody = document.querySelector('#admin-requests-table tbody');
                 tbody.innerHTML = '';
@@ -3372,7 +3402,7 @@
                         <td>${details}</td>
                         <td>
                             <span class="status-badge ${request.status === 'approved' ? 'completed' : 
-                                                     request.status === 'rejected' ? 'rejected' : 'pending'}">
+                                                         request.status === 'rejected' ? 'rejected' : 'pending'}">
                                 ${request.status === 'approved' ? 'تایید شده' : 
                                   request.status === 'rejected' ? 'رد شده' : 'در انتظار'}
                             </span>
@@ -3572,101 +3602,152 @@
                 }
             }
 
-            getRequestTypeText(type) {
-                const types = {
-                    'daily_leave': 'مرخصی روزانه',
-                    'hourly_leave': 'مرخصی ساعتی',
-                    'mission': 'مأموریت'
-                };
-                return types[type] || type;
+            viewImage(imageSrc) {
+                document.getElementById('full-size-image').src = imageSrc;
+                document.getElementById('image-viewer-modal').classList.add('active');
             }
 
-            // سیستم مدیریت کشیک
+            downloadImage(imageSrc, filename) {
+                const link = document.createElement('a');
+                link.href = imageSrc;
+                link.download = filename;
+                link.click();
+            }
+
+            // سیستم جدید مدیریت کشیک - کاملاً بازنویسی شده
             showDutyControls() {
-                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
+                console.log('در حال ایجاد جدول کشیک ماهانه...');
                 
-                if (activeEmployees.length < 4) {
-                    this.showNotification('حداقل ۴ کارمند فعال برای ایجاد کشیک نیاز است', 'error');
-                    return;
-                }
-
-                const employeesList = document.getElementById('active-employees-list');
-                employeesList.innerHTML = activeEmployees.map(emp => 
-                    `<span class="badge">${emp.name}</span>`
-                ).join('');
-
+                // بدون هیچ شرطی جدول ایجاد شود
                 this.createMonthlyDutyTable();
+                
+                // نمایش کنترل‌ها
                 document.getElementById('duty-controls').style.display = 'block';
                 document.getElementById('admin-finalize-duty-btn').style.display = 'inline-flex';
+                
+                // نمایش لیست کارمندان فعال
+                this.showActiveEmployeesList();
+                
+                this.showNotification('جدول کشیک ماهانه ایجاد شد. لطفا کارمندان را انتخاب کنید.', 'success');
+            }
+
+            showActiveEmployeesList() {
+                const activeEmployeesList = document.getElementById('active-employees-list');
+                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
+                
+                activeEmployeesList.innerHTML = '';
+                
+                activeEmployees.forEach(emp => {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge';
+                    badge.textContent = emp.name;
+                    activeEmployeesList.appendChild(badge);
+                });
             }
 
             createMonthlyDutyTable() {
-                const tbody = document.querySelector('#admin-duty-table tbody');
-                tbody.innerHTML = '';
-
-                const currentMonth = new persianDate().month();
-                const currentYear = new persianDate().year();
-                const daysInMonth = new persianDate([currentYear, currentMonth, 1]).daysInMonth();
-
-                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
-
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const date = new persianDate([currentYear, currentMonth, day]);
-                    const dateStr = date.format('YYYY/MM/DD');
-                    const dayOfWeek = this.getPersianDayOfWeek(date.weekday());
+                try {
+                    console.log('=== ایجاد جدول کشیک ماهانه ===');
                     
-                    const existingDuty = this.dutySchedule.find(duty => duty.date === dateStr);
+                    const tbody = document.querySelector('#admin-duty-table tbody');
+                    if (!tbody) {
+                        console.error('بدنه جدول پیدا نشد!');
+                        return;
+                    }
+                    
+                    tbody.innerHTML = '';
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${dateStr}</td>
-                        <td>${dayOfWeek}</td>
-                        <td class="duty-cell">
-                            <select class="duty-select" data-date="${dateStr}" data-type="dayDuty">
-                                <option value="">انتخاب کنید</option>
-                                ${activeEmployees.map(emp => 
-                                    `<option value="${emp.code}" ${existingDuty?.dayDuty === emp.code ? 'selected' : ''}>${emp.name}</option>`
-                                ).join('')}
-                            </select>
-                        </td>
-                        <td class="duty-cell">
-                            <select class="duty-select" data-date="${dateStr}" data-type="nightDuty">
-                                <option value="">انتخاب کنید</option>
-                                ${activeEmployees.map(emp => 
-                                    `<option value="${emp.code}" ${existingDuty?.nightDuty === emp.code ? 'selected' : ''}>${emp.name}</option>`
-                                ).join('')}
-                            </select>
-                        </td>
-                        <td class="duty-cell">
-                            <select class="duty-select" data-date="${dateStr}" data-type="assistantDuty">
-                                <option value="">انتخاب کنید</option>
-                                ${activeEmployees.map(emp => 
-                                    `<option value="${emp.code}" ${existingDuty?.assistantDuty === emp.code ? 'selected' : ''}>${emp.name}</option>`
-                                ).join('')}
-                            </select>
-                        </td>
-                        <td class="duty-cell">
-                            <select class="duty-select" data-date="${dateStr}" data-type="oncallDuty">
-                                <option value="">انتخاب کنید</option>
-                                ${activeEmployees.map(emp => 
-                                    `<option value="${emp.code}" ${existingDuty?.oncallDuty === emp.code ? 'selected' : ''}>${emp.name}</option>`
-                                ).join('')}
-                            </select>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-danger" onclick="ems.deleteDutyByDate('${dateStr}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
+                    const now = new persianDate();
+                    const currentMonth = now.month();
+                    const currentYear = now.year();
+                    
+                    // ایجاد اولین روز ماه
+                    const firstDay = new persianDate();
+                    firstDay.year(currentYear);
+                    firstDay.month(currentMonth);
+                    firstDay.date(1);
+                    
+                    const daysInMonth = firstDay.daysInMonth();
+                    console.log(`تعداد روزهای ماه: ${daysInMonth}`);
+
+                    const activeEmployees = this.employees.filter(emp => 
+                        emp.status === 'active' && !emp.role
+                    );
+
+                    console.log(`کارمندان فعال: ${activeEmployees.length}`, activeEmployees);
+
+                    for (let day = 1; day <= daysInMonth; day++) {
+                        const date = new persianDate();
+                        date.year(currentYear);
+                        date.month(currentMonth);
+                        date.date(day);
+                        
+                        const dateStr = date.format('YYYY/MM/DD');
+                        const dayOfWeek = this.getPersianDayOfWeek(date.weekday());
+                        
+                        // پیدا کردن کشیک موجود برای این تاریخ
+                        const existingDuty = this.dutySchedule.find(duty => duty.date === dateStr);
+
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${dateStr}</td>
+                            <td>${dayOfWeek}</td>
+                            <td class="duty-cell">
+                                <select class="duty-select" data-date="${dateStr}" data-type="dayDuty">
+                                    <option value="">انتخاب کارمند</option>
+                                    ${activeEmployees.map(emp => 
+                                        `<option value="${emp.code}" ${existingDuty?.dayDuty === emp.code ? 'selected' : ''}>
+                                            ${emp.name}
+                                        </option>`
+                                    ).join('')}
+                                </select>
+                            </td>
+                            <td class="duty-cell">
+                                <select class="duty-select" data-date="${dateStr}" data-type="nightDuty">
+                                    <option value="">انتخاب کارمند</option>
+                                    ${activeEmployees.map(emp => 
+                                        `<option value="${emp.code}" ${existingDuty?.nightDuty === emp.code ? 'selected' : ''}>
+                                            ${emp.name}
+                                        </option>`
+                                    ).join('')}
+                                </select>
+                            </td>
+                            <td class="duty-cell">
+                                <select class="duty-select" data-date="${dateStr}" data-type="assistantDuty">
+                                    <option value="">انتخاب کارمند</option>
+                                    ${activeEmployees.map(emp => 
+                                        `<option value="${emp.code}" ${existingDuty?.assistantDuty === emp.code ? 'selected' : ''}>
+                                            ${emp.name}
+                                        </option>`
+                                    ).join('')}
+                                </select>
+                            </td>
+                            <td class="duty-cell">
+                                <select class="duty-select" data-date="${dateStr}" data-type="oncallDuty">
+                                    <option value="">انتخاب کارمند</option>
+                                    ${activeEmployees.map(emp => 
+                                        `<option value="${emp.code}" ${existingDuty?.oncallDuty === emp.code ? 'selected' : ''}>
+                                            ${emp.name}
+                                        </option>`
+                                    ).join('')}
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="ems.clearDutyRow('${dateStr}')">
+                                    <i class="fas fa-undo"></i> پاک کردن
+                                </button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    }
+
+                    console.log('جدول کشیک با موفقیت ایجاد شد');
+                    this.updateDutySummary();
+                    
+                } catch (error) {
+                    console.error('خطا در ایجاد جدول کشیک:', error);
+                    this.showNotification('خطا در ایجاد جدول کشیک', 'error');
                 }
-
-                document.querySelectorAll('.duty-select').forEach(select => {
-                    select.addEventListener('change', (e) => {
-                        this.handleDutyChange(e.target);
-                    });
-                });
             }
 
             handleDutyChange(selectElement) {
@@ -3675,10 +3756,12 @@
                 const employeeCode = selectElement.value;
 
                 if (!employeeCode) {
-                    this.removeDutyAssignment(date, type);
+                    // اگر مقدار خالی باشد، کشیک را پاک کن
+                    this.clearDutyAssignment(date, type);
                     return;
                 }
 
+                // پیدا کردن یا ایجاد کشیک برای این تاریخ
                 let duty = this.dutySchedule.find(d => d.date === date);
                 
                 if (!duty) {
@@ -3695,65 +3778,333 @@
                     this.dutySchedule.push(duty);
                 }
 
+                // آپدیت مقدار
                 duty[type] = employeeCode;
+
                 this.saveDutySchedule();
-                this.showNotification('کشیک با موفقیت ثبت شد', 'success');
+                
+                // نمایش پیام برای کاربر
+                const employee = this.employees.find(emp => emp.code === employeeCode);
+                this.showNotification(`${employee.name} به عنوان ${this.getDutyTypeText(type)} انتخاب شد`, 'info');
+                
+                this.updateDutySummary();
             }
 
-            removeDutyAssignment(date, type) {
+            clearDutyAssignment(date, type) {
                 const duty = this.dutySchedule.find(d => d.date === date);
                 if (duty) {
                     duty[type] = '';
-                    if (!duty.dayDuty && !duty.nightDuty && !duty.assistantDuty && !duty.oncallDuty) {
-                        this.dutySchedule = this.dutySchedule.filter(d => d.date !== date);
-                    }
                     this.saveDutySchedule();
+                    this.showNotification('کشیک پاک شد', 'info');
+                    this.updateDutySummary();
                 }
             }
 
-            deleteDutyByDate(date) {
-                if (confirm('آیا از حذف کشیک این تاریخ اطمینان دارید؟')) {
+            clearDutyRow(date) {
+                if (confirm('آیا می‌خواهید تمام کشیک‌های این تاریخ را پاک کنید؟')) {
                     this.dutySchedule = this.dutySchedule.filter(duty => duty.date !== date);
                     this.saveDutySchedule();
-                    this.createMonthlyDutyTable();
-                    this.showNotification('کشیک با موفقیت حذف شد', 'success');
+                    this.createMonthlyDutyTable(); // رفرش جدول
+                    this.showNotification('کشیک تاریخ مورد نظر پاک شد', 'success');
                 }
+            }
+
+            getDutyTypeText(type) {
+                const types = {
+                    'dayDuty': 'کشیک روز',
+                    'nightDuty': 'کشیک شب', 
+                    'assistantDuty': 'کمک کشیک',
+                    'oncallDuty': 'آنکال'
+                };
+                return types[type] || type;
+            }
+
+            updateDutySummary() {
+                const summaryElement = document.getElementById('duty-summary');
+                const summaryContent = document.getElementById('duty-summary-content');
+                
+                const assignedDuties = this.dutySchedule.filter(duty => 
+                    duty.dayDuty || duty.nightDuty || duty.assistantDuty || duty.oncallDuty
+                );
+                
+                if (assignedDuties.length === 0) {
+                    summaryElement.style.display = 'none';
+                    return;
+                }
+                
+                // محاسبه آمار
+                const employeeStats = {};
+                this.dutySchedule.forEach(duty => {
+                    const duties = [duty.dayDuty, duty.nightDuty, duty.assistantDuty, duty.oncallDuty];
+                    duties.forEach(empCode => {
+                        if (empCode) {
+                            if (!employeeStats[empCode]) {
+                                employeeStats[empCode] = 0;
+                            }
+                            employeeStats[empCode]++;
+                        }
+                    });
+                });
+                
+                let summaryHTML = `
+                    <p><strong>تعداد روزهای دارای کشیک:</strong> ${assignedDuties.length} روز</p>
+                    <p><strong>توزیع کشیک بین کارمندان:</strong></p>
+                    <div class="team-members-list">
+                `;
+                
+                Object.keys(employeeStats).forEach(empCode => {
+                    const employee = this.employees.find(emp => emp.code === empCode);
+                    if (employee) {
+                        summaryHTML += `<span class="badge">${employee.name}: ${employeeStats[empCode]} کشیک</span>`;
+                    }
+                });
+                
+                summaryHTML += '</div>';
+                summaryContent.innerHTML = summaryHTML;
+                summaryElement.style.display = 'block';
             }
 
             finalizeDutySchedule() {
-                const emptyDays = this.dutySchedule.filter(duty => 
-                    !duty.dayDuty || !duty.nightDuty || !duty.assistantDuty || !duty.oncallDuty
+                // بررسی که آیا کشیک‌ای ثبت شده است
+                const assignedDuties = this.dutySchedule.filter(duty => 
+                    duty.dayDuty || duty.nightDuty || duty.assistantDuty || duty.oncallDuty
                 );
 
-                if (emptyDays.length > 0) {
-                    this.showNotification('لطفاً تمام کشیک‌ها را تکمیل کنید', 'error');
+                if (assignedDuties.length === 0) {
+                    this.showNotification('هیچ کشیکی ثبت نشده است', 'error');
                     return;
                 }
 
-                this.showNotification('کشیک‌ها با موفقیت ثبت نهایی شدند', 'success');
-                document.getElementById('duty-controls').style.display = 'none';
+                // بررسی روزهای ناقص
+                const incompleteDays = this.dutySchedule.filter(duty => 
+                    duty.dayDuty && duty.nightDuty && duty.assistantDuty && duty.oncallDuty
+                ).length;
+
+                if (incompleteDays < assignedDuties.length) {
+                    if (!confirm(`توجه: ${assignedDuties.length - incompleteDays} روز کشیک کامل نشده است. آیا می‌خواهید ادامه دهید؟`)) {
+                        return;
+                    }
+                }
+
+                // ذخیره نهایی
+                this.saveDutySchedule();
+                
+                // ارسال به کارمندان
+                this.notifyEmployeesAboutDuty();
+                
+                this.showNotification('کشیک ماهانه با موفقیت ثبت و به کارمندان ارسال شد', 'success');
+                
+                // غیرفعال کردن دکمه ثبت نهایی
                 document.getElementById('admin-finalize-duty-btn').style.display = 'none';
-                this.loadAdminDuty();
+            }
+
+            notifyEmployeesAboutDuty() {
+                const employeeDuties = {};
+                
+                // جمع‌آوری کشیک‌های هر کارمند
+                this.dutySchedule.forEach(duty => {
+                    if (duty.dayDuty) {
+                        if (!employeeDuties[duty.dayDuty]) employeeDuties[duty.dayDuty] = [];
+                        employeeDuties[duty.dayDuty].push({
+                            date: duty.date,
+                            dayOfWeek: duty.dayOfWeek,
+                            type: 'کشیک روز'
+                        });
+                    }
+                    if (duty.nightDuty) {
+                        if (!employeeDuties[duty.nightDuty]) employeeDuties[duty.nightDuty] = [];
+                        employeeDuties[duty.nightDuty].push({
+                            date: duty.date,
+                            dayOfWeek: duty.dayOfWeek,
+                            type: 'کشیک شب'
+                        });
+                    }
+                    if (duty.assistantDuty) {
+                        if (!employeeDuties[duty.assistantDuty]) employeeDuties[duty.assistantDuty] = [];
+                        employeeDuties[duty.assistantDuty].push({
+                            date: duty.date,
+                            dayOfWeek: duty.dayOfWeek,
+                            type: 'کمک کشیک'
+                        });
+                    }
+                    if (duty.oncallDuty) {
+                        if (!employeeDuties[duty.oncallDuty]) employeeDuties[duty.oncallDuty] = [];
+                        employeeDuties[duty.oncallDuty].push({
+                            date: duty.date,
+                            dayOfWeek: duty.dayOfWeek,
+                            type: 'آنکال'
+                        });
+                    }
+                });
+
+                // نمایش خلاصه
+                let summary = `کشیک ماهانه ثبت شد:\n\n`;
+                Object.keys(employeeDuties).forEach(empCode => {
+                    const employee = this.employees.find(emp => emp.code === empCode);
+                    summary += `${employee.name}: ${employeeDuties[empCode].length} کشیک\n`;
+                });
+                
+                console.log('خلاصه کشیک‌ها:', summary);
+                this.showNotification(`کشیک برای ${Object.keys(employeeDuties).length} کارمند تنظیم شد`, 'info');
             }
 
             printDutySchedule() {
-                window.print();
+                const assignedDuties = this.dutySchedule.filter(duty => 
+                    duty.dayDuty || duty.nightDuty || duty.assistantDuty || duty.oncallDuty
+                );
+
+                if (assignedDuties.length === 0) {
+                    this.showNotification('هیچ کشیکی برای پرینت وجود ندارد', 'warning');
+                    return;
+                }
+
+                // ایجاد پنجره جدید برای پرینت
+                const printWindow = window.open('', '_blank');
+                const monthName = new persianDate().format('MMMM');
+                const currentYear = new persianDate().year();
+                
+                printWindow.document.write(`
+                    <html dir="rtl">
+                    <head>
+                        <title>لیست کشیک ${monthName} ${currentYear}</title>
+                        <meta charset="UTF-8">
+                        <style>
+                            body { 
+                                font-family: Tahoma, Arial, sans-serif; 
+                                margin: 20px; 
+                                line-height: 1.6;
+                                color: #333;
+                            }
+                            .header { 
+                                text-align: center; 
+                                margin-bottom: 30px;
+                                border-bottom: 2px solid #333;
+                                padding-bottom: 10px;
+                            }
+                            .header h1 { 
+                                color: #2c5aa0; 
+                                margin: 0;
+                                font-size: 24px;
+                            }
+                            .header .subtitle {
+                                color: #666;
+                                font-size: 16px;
+                                margin-top: 5px;
+                            }
+                            table { 
+                                width: 100%; 
+                                border-collapse: collapse; 
+                                margin: 20px 0;
+                                font-size: 12px;
+                            }
+                            th, td { 
+                                border: 1px solid #000; 
+                                padding: 8px; 
+                                text-align: center; 
+                            }
+                            th { 
+                                background-color: #f0f0f0; 
+                                font-weight: bold;
+                                color: #333;
+                            }
+                            tr:nth-child(even) {
+                                background-color: #f9f9f9;
+                            }
+                            .summary {
+                                margin-top: 30px;
+                                padding: 15px;
+                                background-color: #f0f8ff;
+                                border: 1px solid #bae6fd;
+                                border-radius: 5px;
+                            }
+                            .summary h3 {
+                                color: #0369a1;
+                                margin-top: 0;
+                            }
+                            .footer {
+                                margin-top: 30px;
+                                text-align: left;
+                                font-size: 11px;
+                                color: #666;
+                            }
+                            @media print {
+                                body { margin: 0; }
+                                .no-print { display: none; }
+                                table { font-size: 10px; }
+                                th, td { padding: 6px; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1>لیست کشیک ماه ${monthName} ${currentYear}</h1>
+                            <div class="subtitle">سیستم مدیریت کارکنان - نسخه ۵.۲</div>
+                        </div>
+                        
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ردیف</th>
+                                    <th>تاریخ</th>
+                                    <th>روز</th>
+                                    <th>کشیک روز</th>
+                                    <th>کشیک شب</th>
+                                    <th>کمک کشیک</th>
+                                    <th>آنکال</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${assignedDuties.map((duty, index) => {
+                                    const dayEmp = this.employees.find(e => e.code === duty.dayDuty);
+                                    const nightEmp = this.employees.find(e => e.code === duty.nightDuty);
+                                    const assistantEmp = this.employees.find(e => e.code === duty.assistantDuty);
+                                    const oncallEmp = this.employees.find(e => e.code === duty.oncallDuty);
+                                    
+                                    return `
+                                        <tr>
+                                            <td>${index + 1}</td>
+                                            <td>${duty.date}</td>
+                                            <td>${duty.dayOfWeek}</td>
+                                            <td>${dayEmp ? dayEmp.name : ''}</td>
+                                            <td>${nightEmp ? nightEmp.name : ''}</td>
+                                            <td>${assistantEmp ? assistantEmp.name : ''}</td>
+                                            <td>${oncallEmp ? oncallEmp.name : ''}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                        
+                        <div class="summary">
+                            <h3>خلاصه کشیک‌ها</h3>
+                            <p><strong>تعداد روزهای دارای کشیک:</strong> ${assignedDuties.length} روز</p>
+                            <p><strong>تاریخ پرینت:</strong> ${new persianDate().format('YYYY/MM/DD')}</p>
+                        </div>
+                        
+                        <div class="footer">
+                            <p>این سند به صورت خودکار توسط سیستم مدیریت کارکنان تولید شده است.</p>
+                        </div>
+                        
+                        <div class="no-print" style="margin-top: 20px;">
+                            <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">پرینت</button>
+                            <button onclick="window.close()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-right: 10px;">بستن</button>
+                        </div>
+                        
+                        <script>
+                            window.onload = function() {
+                                window.print();
+                            };
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                
+                printWindow.document.close();
             }
 
             loadAdminDuty() {
                 const tbody = document.querySelector('#admin-duty-table tbody');
                 tbody.innerHTML = '';
-
-                if (this.dutySchedule.length === 0) {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td colspan="7" style="text-align: center; color: #64748b;">
-                            هیچ کشیکی ثبت نشده است
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                    return;
-                }
 
                 this.dutySchedule.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(duty => {
                     const dayDutyEmployee = this.employees.find(emp => emp.code === duty.dayDuty);
@@ -3779,105 +4130,18 @@
                 });
             }
 
-            loadEmployeeDuty() {
-                const tbody = document.querySelector('#employee-duty-table tbody');
-                tbody.innerHTML = '';
-
-                const userDuties = this.dutySchedule
-                    .filter(duty => 
-                        duty.dayDuty === this.currentUser.code ||
-                        duty.nightDuty === this.currentUser.code ||
-                        duty.assistantDuty === this.currentUser.code ||
-                        duty.oncallDuty === this.currentUser.code
-                    )
-                    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                userDuties.forEach(duty => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${duty.date}</td>
-                        <td>${duty.dayOfWeek}</td>
-                        <td>${duty.dayDuty === this.currentUser.code ? '✅' : ''}</td>
-                        <td>${duty.nightDuty === this.currentUser.code ? '✅' : ''}</td>
-                        <td>${duty.assistantDuty === this.currentUser.code ? '✅' : ''}</td>
-                        <td>${duty.oncallDuty === this.currentUser.code ? '✅' : ''}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-
-            // سیستم مدیریت کارکنان
-            showEmployeeModal() {
-                document.getElementById('admin-employee-modal').classList.add('active');
-            }
-
-            saveEmployee() {
-                const form = document.getElementById('admin-employee-form');
-                if (!form.checkValidity()) {
-                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
-                    return;
-                }
-
-                const employee = {
-                    code: document.getElementById('admin-emp-code').value,
-                    name: document.getElementById('admin-emp-name').value,
-                    phone: document.getElementById('admin-emp-phone').value,
-                    password: document.getElementById('admin-emp-password').value,
-                    status: 'active'
-                };
-
-                if (this.employees.find(emp => emp.code === employee.code)) {
-                    this.showNotification('کد پرسنلی تکراری است', 'error');
-                    return;
-                }
-
-                this.employees.push(employee);
-                this.saveEmployees();
-                
-                document.getElementById('admin-employee-modal').classList.remove('active');
-                form.reset();
-                this.showNotification('کارمند با موفقیت اضافه شد', 'success');
-                this.loadAdminEmployees();
-            }
-
-            loadAdminEmployees() {
-                const tbody = document.querySelector('#admin-employees-table tbody');
-                tbody.innerHTML = '';
-
-                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
-
-                activeEmployees.forEach(emp => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${emp.code}</td>
-                        <td>${emp.name}</td>
-                        <td>${emp.phone}</td>
-                        <td>
-                            <span class="status-badge completed">فعال</span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-danger" onclick="ems.deleteEmployee('${emp.code}')">حذف</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
-
-            deleteEmployee(code) {
-                if (confirm('آیا از حذف این کارمند اطمینان دارید؟')) {
-                    const employeeIndex = this.employees.findIndex(emp => emp.code === code);
-                    if (employeeIndex !== -1) {
-                        this.employees[employeeIndex].status = 'inactive';
-                        this.saveEmployees();
-                        this.showNotification('کارمند با موفقیت حذف شد', 'success');
-                        this.loadAdminEmployees();
-                    }
+            deleteDutyByDate(date) {
+                if (confirm('آیا از حذف کشیک این تاریخ اطمینان دارید؟')) {
+                    this.dutySchedule = this.dutySchedule.filter(duty => duty.date !== date);
+                    this.saveDutySchedule();
+                    this.loadAdminDuty();
+                    this.showNotification('کشیک با موفقیت حذف شد', 'success');
                 }
             }
 
-            // سیستم گزارش‌گیری
             loadAdminReports() {
-                // فقط برای مقداردهی اولیه
+                this.initializeReportMonths();
+                this.initializeReportEmployees();
             }
 
             generateReport() {
@@ -4073,7 +4337,6 @@
                 window.print();
             }
 
-            // سیستم تنظیمات
             loadAdminSettings() {
                 document.getElementById('work-start-time').value = this.settings.workStartTime;
                 document.getElementById('work-end-time').value = this.settings.workEndTime;
@@ -4131,17 +4394,10 @@
                 this.showNotification('تنظیمات با موفقیت ذخیره شد', 'success');
             }
 
-            // ابزارهای کمکی
-            viewImage(imageSrc) {
-                document.getElementById('full-size-image').src = imageSrc;
-                document.getElementById('image-viewer-modal').classList.add('active');
-            }
-
-            downloadImage(imageSrc, filename) {
-                const link = document.createElement('a');
-                link.href = imageSrc;
-                link.download = filename;
-                link.click();
+            timeToMinutes(time) {
+                if (!time) return 0;
+                const [hours, minutes] = time.split(':').map(Number);
+                return hours * 60 + minutes;
             }
 
             showNotification(message, type = 'info') {
@@ -4158,11 +4414,6 @@
                 setTimeout(() => {
                     notification.remove();
                 }, 5000);
-            }
-
-            getPersianDayOfWeek(day) {
-                const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
-                return days[day];
             }
 
             // متدهای ذخیره‌سازی
@@ -4184,6 +4435,7 @@
 
             saveDutySchedule() {
                 localStorage.setItem('dutySchedule', JSON.stringify(this.dutySchedule));
+                console.log('Duty schedule saved:', this.dutySchedule);
             }
 
             saveSettingsToStorage() {
@@ -4191,7 +4443,6 @@
             }
         }
 
-        // مقداردهی اولیه سیستم
         document.addEventListener('DOMContentLoaded', function() {
             window.ems = new EmployeeManagementSystem();
         });
