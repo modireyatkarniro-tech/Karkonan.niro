@@ -1,0 +1,4200 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم جامع مدیریت کارکنان | نسخه ۵.۲.۱</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+    <style>
+        :root {
+            --primary-employee: #10b981;
+            --secondary-employee: #059669;
+            --primary-admin: #3b82f6;
+            --secondary-admin: #1d4ed8;
+            --sidebar-employee: #065f46;
+            --sidebar-admin: #1e3a8a;
+            --header-employee: #10b981;
+            --header-admin: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #06b6d4;
+            --purple: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* استایل‌های احراز هویت */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .auth-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            width: 420px;
+            max-width: 90%;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h2 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        .auth-header p {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 6px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 0.875rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .auth-tab.active {
+            background: white;
+            color: #3b82f6;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-lg {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-admin);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-admin);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: #0891b2;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-purple {
+            background: var(--purple);
+            color: white;
+        }
+
+        .btn-purple:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #374151;
+        }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* استایل‌های پورتال */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-admin);
+            color: white;
+            padding: 0;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .employee-theme .sidebar {
+            background: var(--sidebar-employee);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .version {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            background: rgba(255,255,255,0.1);
+            padding: 0.3rem 0.75rem;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar-menu li {
+            margin: 0.3rem 0;
+        }
+
+        .sidebar-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.875rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            transition: all 0.3s ease;
+            border-right: 4px solid transparent;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(255,255,255,0.15);
+            border-right-color: var(--primary-admin);
+        }
+
+        .employee-theme .sidebar-menu a:hover,
+        .employee-theme .sidebar-menu a.active {
+            border-right-color: var(--primary-employee);
+        }
+
+        .sidebar-menu i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--header-admin);
+            color: white;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+
+        .employee-theme .header {
+            background: var(--header-employee);
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-details div:first-child {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            font-size: 0.95rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        /* استایل‌های محتوای تب‌ها */
+        .tab-content {
+            padding: 2rem;
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 1.75rem;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* استایل‌های داشبورد */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.75rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-left: 5px solid var(--primary-admin);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .employee-theme .stat-card {
+            border-left-color: var(--primary-employee);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .stat-icon {
+            width: 55px;
+            height: 55px;
+            background: var(--primary-admin);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .employee-theme .stat-icon {
+            background: var(--primary-employee);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        /* استایل‌های جداول */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 1.125rem;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            padding: 0.5rem 0.875rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-badge.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.approved {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.rejected {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        /* استایل‌های مودال */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 750px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            animation: modalAppear 0.4s ease;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 1.75rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.3rem;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.875rem;
+            background: #fafafa;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            transition: color 0.3s ease;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            color: #374151;
+            background: #f1f5f9;
+        }
+
+        /* استایل‌های فرم */
+        .form-row {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.5;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: left 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1rem;
+            padding-left: 3rem;
+        }
+
+        /* استایل‌های آپلود عکس */
+        .image-upload-container {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .image-upload-container:hover {
+            border-color: #3b82f6;
+            background: #f8fafc;
+        }
+
+        .image-upload-container i {
+            font-size: 2.5rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+        }
+
+        .image-upload-container p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .image-preview img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .image-preview img:hover {
+            transform: scale(1.05);
+        }
+
+        /* استایل‌های گالری */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-actions {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-item:hover .gallery-actions {
+            opacity: 1;
+        }
+
+        .gallery-btn {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        /* استایل‌های سیستم کشیک */
+        .duty-controls {
+            background: #f8fafc;
+            padding: 1.75rem;
+            border-radius: 12px;
+            margin-bottom: 1.75rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .duty-table-container {
+            max-height: 650px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .duty-cell select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .duty-cell select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        .team-members-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+        }
+
+        .team-members-list .badge {
+            background: #e2e8f0;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        /* استایل‌های نقشه */
+        #map, #admin-map {
+            height: 400px;
+            border-radius: 12px;
+            margin: 1rem 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* استایل‌های هشدار حضور و غیاب */
+        .attendance-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            text-align: center;
+            z-index: 1001;
+            animation: alertAppear 0.5s ease;
+            border: 5px solid;
+            min-width: 350px;
+        }
+
+        @keyframes alertAppear {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .attendance-success {
+            border-color: var(--success);
+        }
+
+        .attendance-error {
+            border-color: var(--danger);
+        }
+
+        .attendance-alert h3 {
+            margin-bottom: 1rem;
+            color: #1e293b;
+            font-size: 1.6rem;
+        }
+
+        .attendance-alert p {
+            color: #64748b;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .attendance-controls {
+            display: flex;
+            gap: 1.25rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        /* استایل‌های گزارش‌گیری */
+        .report-controls {
+            background: #f8fafc;
+            padding: 1.75rem;
+            border-radius: 12px;
+            margin-bottom: 1.75rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .settings-group {
+            background: #f8fafc;
+            padding: 1.75rem;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .settings-group h4 {
+            margin-bottom: 1.25rem;
+            color: #374151;
+            font-size: 1.1rem;
+            border-bottom: 2px solid var(--primary-admin);
+            padding-bottom: 0.75rem;
+        }
+
+        /* استایل‌های اطلاع‌رسانی */
+        .notification-container {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 1000;
+            max-width: 420px;
+        }
+
+        .notification {
+            background: white;
+            padding: 1.25rem 1.75rem;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+            margin-bottom: 1rem;
+            border-right: 5px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideInLeft 0.4s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-right-color: var(--success);
+        }
+
+        .notification.error {
+            border-right-color: var(--danger);
+        }
+
+        .notification.info {
+            border-right-color: var(--info);
+        }
+
+        /* استایل‌های مودال تصویر */
+        .image-modal {
+            background: rgba(0,0,0,0.9);
+        }
+
+        .image-modal-content {
+            max-width: 95vw;
+            max-height: 95vh;
+            background: transparent;
+            box-shadow: none;
+            border-radius: 0;
+        }
+
+        .image-modal-body {
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-modal-body img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        /* استایل‌های وضعیت GPS */
+        .gps-status {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .gps-status i {
+            font-size: 1.5rem;
+            color: #0369a1;
+        }
+
+        .gps-status-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .gps-status.active {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .gps-status.active i {
+            color: #16a34a;
+        }
+
+        .gps-status.inactive {
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .gps-status.inactive i {
+            color: #dc2626;
+        }
+
+        /* استایل‌های تست */
+        .test-info {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1.75rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .test-info strong {
+            color: #0369a1;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* استایل‌های ریسپانسیو */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 1rem;
+            }
+            
+            .sidebar-menu li {
+                margin: 0 0.5rem;
+            }
+            
+            .sidebar-menu a {
+                padding: 0.75rem 1rem;
+                border-right: none;
+                border-bottom: 3px solid transparent;
+            }
+            
+            .sidebar-menu a.active {
+                border-right: none;
+                border-bottom: 3px solid var(--primary-admin);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .tab-content {
+                padding: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .modal-content {
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+            
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+            
+            .attendance-controls {
+                flex-direction: column;
+            }
+            
+            .image-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        /* استایل‌های اسکرول بار */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="notification-container" id="notification-container"></div>
+
+    <!-- صفحه احراز هویت -->
+    <div id="auth-page" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>سیستم مدیریت کارکنان</h2>
+                <p>لطفاً برای ادامه وارد شوید</p>
+            </div>
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-auth-type="employee">کارمند</div>
+                <div class="auth-tab" data-auth-type="admin">مدیر</div>
+            </div>
+            <div class="auth-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="user-code">کد کاربری</label>
+                        <input type="text" id="user-code" class="form-control" required placeholder="مثال: EMP001">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">رمز عبور</label>
+                        <input type="password" id="password" class="form-control" required placeholder="رمز عبور خود را وارد کنید">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-sign-in-alt"></i>
+                            ورود به سیستم
+                        </button>
+                    </div>
+                </form>
+                <div class="test-info">
+                    <strong>اطلاعات تست:</strong><br>
+                    مدیر: ADMIN001 / admin123<br>
+                    کارمند: EMP001 / 123456
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- پورتال کارمند -->
+    <div id="employee-portal" class="container hidden employee-theme">
+        <nav class="sidebar employee-sidebar">
+            <div class="sidebar-header">
+                <h2>👋 پنل کارمند</h2>
+                <div class="version">نسخه ۵.۲.۱</div>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-tab="employee-dashboard"><i class="fas fa-chart-bar"></i> <span class="menu-text">داشبورد</span></a></li>
+                <li><a href="#" data-tab="employee-attendance"><i class="fas fa-clock"></i> <span class="menu-text">حضور و غیاب</span></a></li>
+                <li><a href="#" data-tab="employee-tasks"><i class="fas fa-tasks"></i> <span class="menu-text">کارهای من</span></a></li>
+                <li><a href="#" data-tab="employee-requests"><i class="fas fa-calendar-alt"></i> <span class="menu-text">درخواست‌ها</span></a></li>
+                <li><a href="#" data-tab="employee-duty"><i class="fas fa-calendar-day"></i> <span class="menu-text">کشیک‌های من</span></a></li>
+                <li><a href="#" id="employee-sidebar-logout-btn"><i class="fas fa-sign-out-alt"></i> <span class="menu-text">خروج از سیستم</span></a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="header employee-header">
+                <h1 id="employee-page-title">داشبورد کارمند</h1>
+                <div class="user-info">
+                    <div class="user-avatar" id="employee-user-avatar">ک</div>
+                    <div class="user-details">
+                        <div id="employee-user-name">کارمند سیستم</div>
+                        <div class="user-role" id="employee-user-role">کارمند</div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="logout-btn" id="employee-header-logout-btn" title="خروج از سیستم">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- تب‌های محتوای کارمند -->
+            <section class="tab-content active" id="employee-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card employee-stat-card">
+                        <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+                        <div class="stat-label">کارهای امروز</div>
+                        <div class="stat-value" id="employee-today-tasks">0</div>
+                        <div class="stat-desc">در انتظار: <span id="employee-pending-tasks">0</span></div>
+                    </div>
+                    <div class="stat-card employee-stat-card">
+                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="stat-label">درخواست‌ها</div>
+                        <div class="stat-value" id="employee-pending-requests">0</div>
+                        <div class="stat-desc">در انتظار تایید</div>
+                    </div>
+                    <div class="stat-card employee-stat-card">
+                        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                        <div class="stat-label">وضعیت امروز</div>
+                        <div class="stat-value" id="employee-today-status">حاضر</div>
+                        <div class="stat-desc">ساعت کار: <span id="employee-work-hours">0</span></div>
+                    </div>
+                    <div class="stat-card employee-stat-card">
+                        <div class="stat-icon"><i class="fas fa-star"></i></div>
+                        <div class="stat-label">امتیاز ماه</div>
+                        <div class="stat-value" id="employee-month-score">0</div>
+                        <div class="stat-desc">رتبه: <span id="employee-rank">-</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="employee-attendance">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">سیستم حضور و غیاب هوشمند</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="gps-status" id="employee-gps-status">
+                            <i class="fas fa-info-circle"></i>
+                            <div class="gps-status-text" id="employee-gps-status-text">در حال بررسی موقعیت و فعال‌سازی GPS...</div>
+                        </div>
+                        <div class="attendance-controls">
+                            <button class="btn btn-success btn-lg" id="employee-check-in-btn">
+                                <i class="fas fa-sign-in-alt"></i> ثبت ورود
+                            </button>
+                            <button class="btn btn-danger btn-lg" id="employee-check-out-btn">
+                                <i class="fas fa-sign-out-alt"></i> ثبت خروج
+                            </button>
+                        </div>
+                        <div class="table-responsive" style="margin-top: 25px;">
+                            <table id="employee-attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>تاریخ</th>
+                                        <th>روز هفته</th>
+                                        <th>ورود</th>
+                                        <th>خروج</th>
+                                        <th>ساعات کار</th>
+                                        <th>اضافه کار</th>
+                                        <th>وضعیت</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="employee-tasks">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">کارهای من</h3>
+                        <button class="btn btn-primary" id="employee-add-task-btn">
+                            <i class="fas fa-plus"></i> کار جدید
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="employee-tasks-table">
+                                <thead>
+                                    <tr>
+                                        <th>عنوان کار</th>
+                                        <th>تاریخ</th>
+                                        <th>وضعیت</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="employee-requests">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">درخواست‌های من</h3>
+                        <div>
+                            <button class="btn btn-primary" id="employee-add-daily-leave-btn">
+                                <i class="fas fa-plus"></i> مرخصی روزانه
+                            </button>
+                            <button class="btn btn-info" id="employee-add-hourly-leave-btn">
+                                <i class="fas fa-plus"></i> مرخصی ساعتی
+                            </button>
+                            <button class="btn btn-success" id="employee-add-mission-btn">
+                                <i class="fas fa-plus"></i> مأموریت
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="employee-requests-table">
+                                <thead>
+                                    <tr>
+                                        <th>نوع درخواست</th>
+                                        <th>تاریخ</th>
+                                        <th>جزئیات</th>
+                                        <th>وضعیت</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="employee-duty">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">کشیک‌های من</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="employee-duty-table">
+                                <thead>
+                                    <tr>
+                                        <th>تاریخ</th>
+                                        <th>روز هفته</th>
+                                        <th>کشیک روز</th>
+                                        <th>کشیک شب</th>
+                                        <th>کمک کشیک</th>
+                                        <th>آنکال</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- پورتال مدیر -->
+    <div id="admin-portal" class="container hidden admin-theme">
+        <nav class="sidebar admin-sidebar">
+            <div class="sidebar-header">
+                <h2>👑 پنل مدیریت</h2>
+                <div class="version">نسخه ۵.۲.۱</div>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-tab="admin-dashboard"><i class="fas fa-chart-bar"></i> <span class="menu-text">داشبورد</span></a></li>
+                <li><a href="#" data-tab="admin-employees"><i class="fas fa-users"></i> <span class="menu-text">مدیریت کارکنان</span></a></li>
+                <li><a href="#" data-tab="admin-tasks"><i class="fas fa-tasks"></i> <span class="menu-text">مدیریت کارها</span></a></li>
+                <li><a href="#" data-tab="admin-requests"><i class="fas fa-calendar-check"></i> <span class="menu-text">مدیریت درخواست‌ها</span></a></li>
+                <li><a href="#" data-tab="admin-duty"><i class="fas fa-calendar-day"></i> <span class="menu-text">مدیریت کشیک</span></a></li>
+                <li><a href="#" data-tab="admin-reports"><i class="fas fa-chart-line"></i> <span class="menu-text">گزارش‌گیری</span></a></li>
+                <li><a href="#" data-tab="admin-settings"><i class="fas fa-cog"></i> <span class="menu-text">تنظیمات</span></a></li>
+                <li><a href="#" id="admin-sidebar-logout-btn"><i class="fas fa-sign-out-alt"></i> <span class="menu-text">خروج از سیستم</span></a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="header admin-header">
+                <h1 id="admin-page-title">داشبورد مدیریت</h1>
+                <div class="user-info">
+                    <div class="user-avatar" id="admin-user-avatar">مد</div>
+                    <div class="user-details">
+                        <div id="admin-user-name">مدیر سیستم</div>
+                        <div class="user-role" id="admin-user-role">مدیر</div>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="logout-btn" id="admin-header-logout-btn" title="خروج از سیستم">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- تب‌های محتوای مدیر -->
+            <section class="tab-content active" id="admin-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card admin-stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-label">تعداد کارکنان</div>
+                        <div class="stat-value" id="total-employees">0</div>
+                        <div class="stat-desc">فعال: <span id="active-employees">0</span></div>
+                    </div>
+                    <div class="stat-card admin-stat-card">
+                        <div class="stat-icon"><i class="fas fa-tasks"></i></div>
+                        <div class="stat-label">کارهای امروز</div>
+                        <div class="stat-value" id="today-tasks">0</div>
+                        <div class="stat-desc">در انتظار: <span id="pending-tasks">0</span></div>
+                    </div>
+                    <div class="stat-card admin-stat-card">
+                        <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                        <div class="stat-label">درخواست‌ها</div>
+                        <div class="stat-value" id="pending-requests">0</div>
+                        <div class="stat-desc">در انتظار تایید</div>
+                    </div>
+                    <div class="stat-card admin-stat-card">
+                        <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                        <div class="stat-label">حضور امروز</div>
+                        <div class="stat-value" id="today-attendance">0</div>
+                        <div class="stat-desc">کارکنان حاضر</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">کارهای در انتظار تایید</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="admin-pending-tasks-table">
+                                <thead>
+                                    <tr>
+                                        <th>کارمند</th>
+                                        <th>عنوان کار</th>
+                                        <th>تاریخ</th>
+                                        <th>وضعیت کار</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">درخواست‌های در انتظار تایید</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="admin-pending-requests-table">
+                                <thead>
+                                    <tr>
+                                        <th>کارمند</th>
+                                        <th>نوع درخواست</th>
+                                        <th>تاریخ</th>
+                                        <th>جزئیات</th>
+                                        <th>وضعیت</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="admin-employees">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">مدیریت کارکنان</h3>
+                        <button class="btn btn-primary" id="admin-add-employee-btn">
+                            <i class="fas fa-plus"></i> افزودن کارمند
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="admin-employees-table">
+                                <thead>
+                                    <tr>
+                                        <th>کد پرسنلی</th>
+                                        <th>نام و نام خانوادگی</th>
+                                        <th>شماره تماس</th>
+                                        <th>وضعیت</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="admin-tasks">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">مدیریت کارها</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="admin-tasks-table">
+                                <thead>
+                                    <tr>
+                                        <th>کارمند</th>
+                                        <th>عنوان کار</th>
+                                        <th>تاریخ</th>
+                                        <th>وضعیت</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="admin-requests">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">مدیریت درخواست‌ها</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table id="admin-requests-table">
+                                <thead>
+                                    <tr>
+                                        <th>کارمند</th>
+                                        <th>نوع درخواست</th>
+                                        <th>تاریخ</th>
+                                        <th>جزئیات</th>
+                                        <th>وضعیت</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="admin-duty">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">مدیریت کشیک ماهانه</h3>
+                        <div>
+                            <button class="btn btn-primary" id="admin-generate-duty-btn">
+                                <i class="fas fa-calendar-plus"></i> ایجاد جدول ماهانه
+                            </button>
+                            <button class="btn btn-success" id="admin-finalize-duty-btn" style="display: none;">
+                                <i class="fas fa-check"></i> ثبت نهایی کشیک
+                            </button>
+                            <button class="btn btn-purple" id="admin-print-duty-btn">
+                                <i class="fas fa-print"></i> پرینت لیست کشیک
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="duty-controls" id="duty-controls" style="display: none;">
+                            <div class="form-group">
+                                <label>کارمندان فعال:</label>
+                                <div class="team-members-list" id="active-employees-list">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="duty-table-container">
+                            <div class="table-responsive">
+                                <table id="admin-duty-table">
+                                    <thead>
+                                        <tr>
+                                            <th>تاریخ شمسی</th>
+                                            <th>ایام هفته</th>
+                                            <th>کشیک روز</th>
+                                            <th>کشیک شب</th>
+                                            <th>کمک کشیک</th>
+                                            <th>آنکال</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="admin-reports">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">گزارش‌گیری جامع</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="report-controls">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="admin-report-type">نوع گزارش</label>
+                                    <select id="admin-report-type" class="form-control">
+                                        <option value="attendance">گزارش حضور و غیاب</option>
+                                        <option value="tasks">گزارش کارها</option>
+                                        <option value="requests">گزارش درخواست‌ها</option>
+                                        <option value="overtime">گزارش اضافه کار</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-report-month">ماه</label>
+                                    <select id="admin-report-month" class="form-control"></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="admin-report-employee">کارمند</label>
+                                    <select id="admin-report-employee" class="form-control">
+                                        <option value="all">همه کارمندان</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" id="admin-generate-report-btn">
+                                        <i class="fas fa-chart-bar"></i> تولید گزارش
+                                    </button>
+                                    <button class="btn btn-purple" id="admin-print-report-btn" style="display: none;">
+                                        <i class="fas fa-print"></i> پرینت گزارش
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table id="admin-report-table">
+                                <thead>
+                                    <tr>
+                                        <th>تاریخ</th>
+                                        <th>شرح</th>
+                                        <th>مقدار</th>
+                                        <th>وضعیت</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="tab-content" id="admin-settings">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">تنظیمات سیستم</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="settings-grid">
+                            <div class="settings-group">
+                                <h4>تنظیمات زمانی</h4>
+                                <div class="form-group">
+                                    <label for="work-start-time">ساعت شروع کار</label>
+                                    <input type="time" id="work-start-time" class="form-control" value="08:00">
+                                </div>
+                                <div class="form-group">
+                                    <label for="work-end-time">ساعت پایان کار</label>
+                                    <input type="time" id="work-end-time" class="form-control" value="17:00">
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="work-start-date">تاریخ شروع کار</label>
+                                        <input type="text" id="work-start-date" class="form-control datepicker-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="work-end-date">تاریخ پایان کار</label>
+                                        <input type="text" id="work-end-date" class="form-control datepicker-input">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="settings-group">
+                                <h4>موقعیت مکانی</h4>
+                                <div class="form-group">
+                                    <label>موقعیت دفتر روی نقشه</label>
+                                    <button class="btn btn-info btn-block" id="select-location-btn">
+                                        <i class="fas fa-map-marker-alt"></i> انتخاب موقعیت روی نقشه
+                                    </button>
+                                </div>
+                                <div id="admin-map" style="height: 300px; display: none;"></div>
+                                <div class="form-group">
+                                    <label for="office-lat">عرض جغرافیایی</label>
+                                    <input type="text" id="office-lat" class="form-control" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="office-lng">طول جغرافیایی</label>
+                                    <input type="text" id="office-lng" class="form-control" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 2rem;">
+                            <button class="btn btn-primary btn-lg" id="admin-save-settings-btn">
+                                <i class="fas fa-save"></i> ذخیره تنظیمات
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- مودال‌ها -->
+    <div class="modal" id="admin-employee-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>افزودن کارمند جدید</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="admin-employee-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="admin-emp-code">کد پرسنلی *</label>
+                            <input type="text" id="admin-emp-code" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-emp-name">نام و نام خانوادگی *</label>
+                            <input type="text" id="admin-emp-name" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="admin-emp-phone">شماره تماس *</label>
+                            <input type="tel" id="admin-emp-phone" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="admin-emp-password">رمز عبور *</label>
+                            <input type="password" id="admin-emp-password" class="form-control" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass close-modal">انصراف</button>
+                <button class="btn btn-primary" id="admin-save-employee-btn">ذخیره کارمند</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="employee-task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>ثبت کار جدید</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="employee-task-form">
+                    <div class="form-group">
+                        <label for="task-title">عنوان کار *</label>
+                        <input type="text" id="task-title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-location">محل کار *</label>
+                        <input type="text" id="task-location" class="form-control" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-date">تاریخ کار *</label>
+                            <input type="text" id="task-date" class="form-control datepicker-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-type">نوع کار *</label>
+                            <select id="task-type" class="form-control" required>
+                                <option value="individual">فردی</option>
+                                <option value="team">گروهی</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="team-members-group" style="display: none;">
+                        <label for="team-members">اعضای تیم</label>
+                        <select id="team-members" class="form-control" multiple></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-description">توضیحات کار *</label>
+                        <textarea id="task-description" class="form-control" required rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-status">وضعیت کار *</label>
+                        <select id="task-status" class="form-control" required>
+                            <option value="completed">کار تمام شده</option>
+                            <option value="incomplete">کار نیمه تمام</option>
+                            <option value="repeated">کار تکرار شده</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>عکس‌های قبل از کار</label>
+                            <div class="image-upload-container" id="before-photos-container">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>عکس‌ها را اینجا رها کنید یا برای انتخاب کلیک کنید</p>
+                                <input type="file" id="before-photos" accept="image/*" multiple style="display: none;">
+                                <button type="button" class="btn btn-glass" id="before-photos-btn">انتخاب عکس‌ها</button>
+                            </div>
+                            <div class="image-preview" id="before-photos-preview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>عکس‌های بعد از کار</label>
+                            <div class="image-upload-container" id="after-photos-container">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>عکس‌ها را اینجا رها کنید یا برای انتخاب کلیک کنید</p>
+                                <input type="file" id="after-photos" accept="image/*" multiple style="display: none;">
+                                <button type="button" class="btn btn-glass" id="after-photos-btn">انتخاب عکس‌ها</button>
+                            </div>
+                            <div class="image-preview" id="after-photos-preview"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass close-modal">انصراف</button>
+                <button class="btn btn-success" id="employee-submit-task-btn">ارسال به مدیر</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="admin-task-details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>جزئیات کار</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="task-details-content"></div>
+            </div>
+            <div class="modal-footer">
+                <!-- دکمه‌ها به صورت داینامیک اضافه می‌شوند -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="daily-leave-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>درخواست مرخصی روزانه</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="daily-leave-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="daily-start-date">تاریخ شروع *</label>
+                            <input type="text" id="daily-start-date" class="form-control datepicker-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="daily-end-date">تاریخ پایان *</label>
+                            <input type="text" id="daily-end-date" class="form-control datepicker-input" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="daily-reason">علت مرخصی *</label>
+                        <textarea id="daily-reason" class="form-control" required rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>تعداد روزهای مرخصی: <span id="leave-days-count" style="font-weight: bold; color: #3b82f6;">0</span> روز</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass close-modal">انصراف</button>
+                <button class="btn btn-success" id="submit-daily-leave-btn">ارسال به مدیر</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="hourly-leave-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>درخواست مرخصی ساعتی</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="hourly-leave-form">
+                    <div class="form-group">
+                        <label for="hourly-date">تاریخ *</label>
+                        <input type="text" id="hourly-date" class="form-control datepicker-input" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hourly-start-time">ساعت شروع *</label>
+                            <input type="time" id="hourly-start-time" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hourly-end-time">ساعت پایان *</label>
+                            <input type="time" id="hourly-end-time" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="hourly-reason">علت مرخصی *</label>
+                        <textarea id="hourly-reason" class="form-control" required rows="4"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass close-modal">انصراف</button>
+                <button class="btn btn-success" id="submit-hourly-leave-btn">ارسال به مدیر</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="mission-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>درخواست مأموریت</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="mission-form">
+                    <div class="form-group">
+                        <label for="mission-date">تاریخ مأموریت *</label>
+                        <input type="text" id="mission-date" class="form-control datepicker-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mission-location">محل مأموریت *</label>
+                        <input type="text" id="mission-location" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mission-reason">علت مأموریت *</label>
+                        <textarea id="mission-reason" class="form-control" required rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="mission-description">توضیحات مأموریت</label>
+                        <textarea id="mission-description" class="form-control" rows="4"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-glass close-modal">انصراف</button>
+                <button class="btn btn-success" id="submit-mission-btn">ارسال به مدیر</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="admin-request-details-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>جزئیات درخواست</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="request-details-content"></div>
+            </div>
+            <div class="modal-footer">
+                <!-- دکمه‌ها به صورت داینامیک اضافه می‌شوند -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal image-modal" id="image-viewer-modal">
+        <div class="modal-content image-modal-content">
+            <div class="modal-header">
+                <h3>مشاهده عکس</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body image-modal-body">
+                <img id="full-size-image" src="" alt="عکس کامل">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+    
+    <script>
+        class EmployeeManagementSystem {
+            constructor() {
+                this.currentUser = null;
+                this.employees = JSON.parse(localStorage.getItem('employees')) || [];
+                this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+                this.requests = JSON.parse(localStorage.getItem('requests')) || [];
+                this.attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+                this.dutySchedule = JSON.parse(localStorage.getItem('dutySchedule')) || [];
+                this.settings = JSON.parse(localStorage.getItem('settings')) || {
+                    workStartTime: '08:00',
+                    workEndTime: '17:00',
+                    workStartDate: new persianDate().format('YYYY/MM/DD'),
+                    workEndDate: new persianDate().add('month', 1).format('YYYY/MM/DD'),
+                    officeLat: 35.6892,
+                    officeLng: 51.3890
+                };
+                
+                this.adminMap = null;
+                this.officeMarker = null;
+                this.currentTaskView = null;
+                this.currentRequestView = null;
+                this.editingDutyId = null;
+                
+                this.init();
+            }
+
+            init() {
+                this.initializeDefaultData();
+                this.bindEvents();
+                this.checkExistingSession();
+                this.initializePersianDate();
+            }
+
+            initializeDefaultData() {
+                if (this.employees.length === 0) {
+                    this.employees = [
+                        {
+                            code: 'EMP001',
+                            name: 'علی محمدی',
+                            phone: '09123456789',
+                            password: '123456',
+                            status: 'active'
+                        },
+                        {
+                            code: 'EMP002', 
+                            name: 'مریم رضایی',
+                            phone: '09129876543',
+                            password: '123456',
+                            status: 'active'
+                        },
+                        {
+                            code: 'EMP003',
+                            name: 'رضا حسینی',
+                            phone: '09121111111',
+                            password: '123456',
+                            status: 'active'
+                        },
+                        {
+                            code: 'EMP004',
+                            name: 'فاطمه کریمی',
+                            phone: '09122222222',
+                            password: '123456',
+                            status: 'active'
+                        }
+                    ];
+                    this.saveEmployees();
+                }
+
+                if (!localStorage.getItem('adminInitialized')) {
+                    this.employees.push({
+                        code: 'ADMIN001',
+                        name: 'مدیر سیستم',
+                        phone: '09120000000',
+                        password: 'admin123',
+                        status: 'active',
+                        role: 'admin'
+                    });
+                    this.saveEmployees();
+                    localStorage.setItem('adminInitialized', 'true');
+                }
+            }
+
+            bindEvents() {
+                // رویدادهای فرم لاگین
+                document.getElementById('login-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleLogin();
+                });
+
+                document.querySelectorAll('.auth-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                    });
+                });
+
+                // رویدادهای خروج
+                document.getElementById('employee-sidebar-logout-btn').addEventListener('click', () => this.logout());
+                document.getElementById('employee-header-logout-btn').addEventListener('click', () => this.logout());
+                document.getElementById('admin-sidebar-logout-btn').addEventListener('click', () => this.logout());
+                document.getElementById('admin-header-logout-btn').addEventListener('click', () => this.logout());
+
+                // رویدادهای تب‌های کارمند
+                document.querySelectorAll('#employee-portal .sidebar-menu a[data-tab]').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const tabName = e.target.closest('a').dataset.tab;
+                        this.switchEmployeeTab(tabName);
+                    });
+                });
+
+                // رویدادهای تب‌های مدیر
+                document.querySelectorAll('#admin-portal .sidebar-menu a[data-tab]').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const tabName = e.target.closest('a').dataset.tab;
+                        this.switchAdminTab(tabName);
+                    });
+                });
+
+                // رویدادهای دکمه‌ها
+                document.getElementById('employee-check-in-btn').addEventListener('click', () => this.handleCheckIn());
+                document.getElementById('employee-check-out-btn').addEventListener('click', () => this.handleCheckOut());
+                document.getElementById('employee-add-task-btn').addEventListener('click', () => this.showTaskModal());
+                document.getElementById('employee-add-daily-leave-btn').addEventListener('click', () => this.showDailyLeaveModal());
+                document.getElementById('employee-add-hourly-leave-btn').addEventListener('click', () => this.showHourlyLeaveModal());
+                document.getElementById('employee-add-mission-btn').addEventListener('click', () => this.showMissionModal());
+                
+                document.getElementById('admin-add-employee-btn').addEventListener('click', () => this.showEmployeeModal());
+                document.getElementById('admin-generate-duty-btn').addEventListener('click', () => this.showDutyControls());
+                document.getElementById('admin-finalize-duty-btn').addEventListener('click', () => this.finalizeDutySchedule());
+                document.getElementById('admin-print-duty-btn').addEventListener('click', () => this.printDutySchedule());
+                document.getElementById('admin-generate-report-btn').addEventListener('click', () => this.generateReport());
+                document.getElementById('admin-print-report-btn').addEventListener('click', () => this.printReport());
+                document.getElementById('admin-save-settings-btn').addEventListener('click', () => this.saveSettings());
+                document.getElementById('select-location-btn').addEventListener('click', () => this.showMapForLocation());
+
+                // رویدادهای مودال‌ها
+                document.querySelectorAll('.close-modal').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.target.closest('.modal').classList.remove('active');
+                    });
+                });
+
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            modal.classList.remove('active');
+                        }
+                    });
+                });
+
+                // رویدادهای فرم‌ها
+                document.getElementById('task-type').addEventListener('change', (e) => {
+                    const teamMembersGroup = document.getElementById('team-members-group');
+                    teamMembersGroup.style.display = e.target.value === 'team' ? 'block' : 'none';
+                });
+
+                document.getElementById('admin-save-employee-btn').addEventListener('click', () => this.saveEmployee());
+                document.getElementById('employee-submit-task-btn').addEventListener('click', () => this.submitTask());
+                document.getElementById('submit-daily-leave-btn').addEventListener('click', () => this.submitDailyLeave());
+                document.getElementById('submit-hourly-leave-btn').addEventListener('click', () => this.submitHourlyLeave());
+                document.getElementById('submit-mission-btn').addEventListener('click', () => this.submitMission());
+
+                // رویداد محاسبه خودکار روزهای مرخصی
+                document.getElementById('daily-start-date').addEventListener('change', () => this.calculateLeaveDays());
+                document.getElementById('daily-end-date').addEventListener('change', () => this.calculateLeaveDays());
+
+                // رویدادهای آپلود عکس
+                this.bindImageUpload('before-photos-btn', 'before-photos', 'before-photos-preview');
+                this.bindImageUpload('after-photos-btn', 'after-photos', 'after-photos-preview');
+            }
+
+            bindImageUpload(buttonId, inputId, previewId) {
+                const button = document.getElementById(buttonId);
+                const input = document.getElementById(inputId);
+                const preview = document.getElementById(previewId);
+
+                button.addEventListener('click', () => input.click());
+                
+                input.addEventListener('change', (e) => {
+                    preview.innerHTML = '';
+                    Array.from(e.target.files).forEach(file => {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.onclick = () => this.viewImage(e.target.result);
+                                preview.appendChild(img);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                });
+
+                const container = document.getElementById(buttonId.replace('btn', 'container'));
+                container.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    container.style.borderColor = '#3b82f6';
+                });
+
+                container.addEventListener('dragleave', () => {
+                    container.style.borderColor = '#ddd';
+                });
+
+                container.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    container.style.borderColor = '#ddd';
+                    input.files = e.dataTransfer.files;
+                    const event = new Event('change');
+                    input.dispatchEvent(event);
+                });
+            }
+
+            initializePersianDate() {
+                const now = new persianDate();
+                
+                // مقداردهی اولیه تاریخ‌ها
+                document.getElementById('daily-start-date').value = now.format('YYYY/MM/DD');
+                document.getElementById('daily-end-date').value = now.add('day', 1).format('YYYY/MM/DD');
+                document.getElementById('hourly-date').value = now.format('YYYY/MM/DD');
+                document.getElementById('mission-date').value = now.format('YYYY/MM/DD');
+                document.getElementById('task-date').value = now.format('YYYY/MM/DD');
+                document.getElementById('work-start-date').value = now.format('YYYY/MM/DD');
+                document.getElementById('work-end-date').value = now.add('month', 1).format('YYYY/MM/DD');
+
+                // فعال‌سازی datepicker
+                $('.datepicker-input').persianDatepicker({
+                    format: 'YYYY/MM/DD',
+                    observer: true,
+                    initialValue: false,
+                    autoClose: true
+                });
+
+                // محاسبه اولیه روزهای مرخصی
+                this.calculateLeaveDays();
+                this.initializeReportMonths();
+                this.initializeReportEmployees();
+            }
+
+            calculateLeaveDays() {
+                const startDateStr = document.getElementById('daily-start-date').value;
+                const endDateStr = document.getElementById('daily-end-date').value;
+                
+                if (!startDateStr || !endDateStr) {
+                    document.getElementById('leave-days-count').textContent = '0';
+                    return;
+                }
+
+                try {
+                    const startDate = new persianDate(startDateStr);
+                    const endDate = new persianDate(endDateStr);
+                    
+                    let daysCount = 0;
+                    let currentDate = new persianDate(startDate);
+                    
+                    while (currentDate.valueOf() <= endDate.valueOf()) {
+                        daysCount++;
+                        currentDate = currentDate.add('day', 1);
+                    }
+
+                    document.getElementById('leave-days-count').textContent = daysCount;
+                } catch (error) {
+                    console.error('خطا در محاسبه روزهای مرخصی:', error);
+                    document.getElementById('leave-days-count').textContent = '0';
+                }
+            }
+
+            initializeReportMonths() {
+                const monthSelect = document.getElementById('admin-report-month');
+                monthSelect.innerHTML = '';
+                
+                const months = [
+                    'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+                    'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+                ];
+                
+                months.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index + 1;
+                    option.textContent = month;
+                    monthSelect.appendChild(option);
+                });
+                
+                const currentMonth = new persianDate().month();
+                monthSelect.value = currentMonth;
+            }
+
+            initializeReportEmployees() {
+                const employeeSelect = document.getElementById('admin-report-employee');
+                employeeSelect.innerHTML = '<option value="all">همه کارمندان</option>';
+                
+                this.employees
+                    .filter(emp => emp.status === 'active' && !emp.role)
+                    .forEach(emp => {
+                        const option = document.createElement('option');
+                        option.value = emp.code;
+                        option.textContent = emp.name;
+                        employeeSelect.appendChild(option);
+                    });
+            }
+
+            handleLogin() {
+                const userCode = document.getElementById('user-code').value;
+                const password = document.getElementById('password').value;
+
+                const user = this.employees.find(emp => 
+                    emp.code === userCode && emp.password === password && emp.status === 'active'
+                );
+
+                if (user) {
+                    this.currentUser = user;
+                    
+                    if (user.role === 'admin') {
+                        this.showAdminPortal();
+                    } else {
+                        this.showEmployeePortal();
+                    }
+                    
+                    this.hideAuthPage();
+                    this.showNotification(`خوش آمدید ${user.name}`, 'success');
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                } else {
+                    this.showNotification('کد کاربری یا رمز عبور اشتباه است', 'error');
+                }
+            }
+
+            showAdminPortal() {
+                document.getElementById('admin-portal').classList.remove('hidden');
+                document.getElementById('employee-portal').classList.add('hidden');
+                
+                document.getElementById('admin-user-name').textContent = this.currentUser.name;
+                document.getElementById('admin-user-avatar').textContent = 'مد';
+                document.getElementById('admin-user-role').textContent = 'مدیر';
+                
+                this.loadAdminData();
+            }
+
+            showEmployeePortal() {
+                document.getElementById('employee-portal').classList.remove('hidden');
+                document.getElementById('admin-portal').classList.add('hidden');
+                
+                document.getElementById('employee-user-name').textContent = this.currentUser.name;
+                document.getElementById('employee-user-avatar').textContent = 'ک';
+                document.getElementById('employee-user-role').textContent = 'کارمند';
+                
+                this.loadEmployeeData();
+                this.initializeGPS();
+            }
+
+            hideAuthPage() {
+                document.getElementById('auth-page').style.display = 'none';
+            }
+
+            showAuthPage() {
+                document.getElementById('auth-page').style.display = 'flex';
+                document.getElementById('admin-portal').classList.add('hidden');
+                document.getElementById('employee-portal').classList.add('hidden');
+                
+                document.getElementById('user-code').value = '';
+                document.getElementById('password').value = '';
+            }
+
+            logout() {
+                this.currentUser = null;
+                localStorage.removeItem('currentUser');
+                this.showAuthPage();
+                this.showNotification('با موفقیت خارج شدید', 'info');
+            }
+
+            checkExistingSession() {
+                const savedUser = localStorage.getItem('currentUser');
+                if (savedUser) {
+                    this.currentUser = JSON.parse(savedUser);
+                    if (this.currentUser.role === 'admin') {
+                        this.showAdminPortal();
+                    } else {
+                        this.showEmployeePortal();
+                    }
+                    this.hideAuthPage();
+                }
+            }
+
+            switchEmployeeTab(tabName) {
+                document.querySelectorAll('#employee-portal .tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('#employee-portal .sidebar-menu a').forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                document.getElementById(tabName).classList.add('active');
+                document.querySelector(`#employee-portal .sidebar-menu a[data-tab="${tabName}"]`).classList.add('active');
+
+                this.updateEmployeePageTitle(tabName);
+
+                switch(tabName) {
+                    case 'employee-attendance':
+                        this.loadEmployeeAttendance();
+                        break;
+                    case 'employee-tasks':
+                        this.loadEmployeeTasks();
+                        break;
+                    case 'employee-requests':
+                        this.loadEmployeeRequests();
+                        break;
+                    case 'employee-duty':
+                        this.loadEmployeeDuty();
+                        break;
+                    case 'employee-dashboard':
+                        this.updateEmployeeStats();
+                        break;
+                }
+            }
+
+            switchAdminTab(tabName) {
+                document.querySelectorAll('#admin-portal .tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelectorAll('#admin-portal .sidebar-menu a').forEach(link => {
+                    link.classList.remove('active');
+                });
+
+                document.getElementById(tabName).classList.add('active');
+                document.querySelector(`#admin-portal .sidebar-menu a[data-tab="${tabName}"]`).classList.add('active');
+
+                document.getElementById('admin-page-title').textContent = this.getAdminPageTitle(tabName);
+
+                switch(tabName) {
+                    case 'admin-employees':
+                        this.loadAdminEmployees();
+                        break;
+                    case 'admin-tasks':
+                        this.loadAdminTasks();
+                        break;
+                    case 'admin-requests':
+                        this.loadAdminRequests();
+                        break;
+                    case 'admin-duty':
+                        this.loadAdminDuty();
+                        break;
+                    case 'admin-reports':
+                        this.loadAdminReports();
+                        break;
+                    case 'admin-settings':
+                        this.loadAdminSettings();
+                        break;
+                    case 'admin-dashboard':
+                        this.updateAdminStats();
+                        this.loadAdminPendingTasks();
+                        this.loadAdminPendingRequests();
+                        break;
+                }
+            }
+
+            updateEmployeePageTitle(tabName) {
+                const titles = {
+                    'employee-dashboard': 'داشبورد کارمند',
+                    'employee-attendance': 'حضور و غیاب',
+                    'employee-tasks': 'کارهای من',
+                    'employee-requests': 'درخواست‌های من',
+                    'employee-duty': 'کشیک‌های من'
+                };
+                document.getElementById('employee-page-title').textContent = titles[tabName] || 'داشبورد کارمند';
+            }
+
+            getAdminPageTitle(tabName) {
+                const titles = {
+                    'admin-dashboard': 'داشبورد مدیریت',
+                    'admin-employees': 'مدیریت کارکنان',
+                    'admin-tasks': 'مدیریت کارها',
+                    'admin-requests': 'مدیریت درخواست‌ها',
+                    'admin-duty': 'مدیریت کشیک',
+                    'admin-reports': 'گزارش‌گیری',
+                    'admin-settings': 'تنظیمات سیستم'
+                };
+                return titles[tabName] || 'داشبورد مدیریت';
+            }
+
+            loadEmployeeData() {
+                this.loadEmployeeAttendance();
+                this.loadEmployeeTasks();
+                this.loadEmployeeRequests();
+                this.loadEmployeeDuty();
+                this.updateEmployeeStats();
+            }
+
+            loadAdminData() {
+                this.loadAdminEmployees();
+                this.loadAdminTasks();
+                this.loadAdminRequests();
+                this.loadAdminDuty();
+                this.loadAdminReports();
+                this.updateAdminStats();
+                this.loadAdminPendingTasks();
+                this.loadAdminPendingRequests();
+            }
+
+            updateEmployeeStats() {
+                const today = new persianDate().format('YYYY/MM/DD');
+                
+                const todayTasks = this.tasks.filter(task => 
+                    task.userId === this.currentUser.code && task.date === today
+                );
+                document.getElementById('employee-today-tasks').textContent = todayTasks.length;
+                
+                const pendingTasks = todayTasks.filter(task => task.status === 'pending');
+                document.getElementById('employee-pending-tasks').textContent = pendingTasks.length;
+                
+                const pendingRequests = this.requests.filter(request => 
+                    request.userId === this.currentUser.code && request.status === 'pending'
+                );
+                document.getElementById('employee-pending-requests').textContent = pendingRequests.length;
+                
+                const todayAttendance = this.attendance.find(record => 
+                    record.userId === this.currentUser.code && record.date === today
+                );
+                if (todayAttendance) {
+                    document.getElementById('employee-today-status').textContent = todayAttendance.checkOut ? 'کار تمام' : 'حاضر';
+                    if (todayAttendance.checkIn && todayAttendance.checkOut) {
+                        const workHours = this.calculateWorkHours(todayAttendance.checkIn, todayAttendance.checkOut);
+                        document.getElementById('employee-work-hours').textContent = workHours;
+                    }
+                } else {
+                    document.getElementById('employee-today-status').textContent = 'غایب';
+                }
+
+                // محاسبه امتیاز ماه
+                const monthStart = new persianDate().startOf('month').format('YYYY/MM/DD');
+                const monthEnd = new persianDate().endOf('month').format('YYYY/MM/DD');
+                
+                const monthTasks = this.tasks.filter(task => 
+                    task.userId === this.currentUser.code && 
+                    task.date >= monthStart && 
+                    task.date <= monthEnd &&
+                    task.status === 'approved'
+                );
+                
+                const monthScore = monthTasks.length * 10; // هر کار تایید شده 10 امتیاز
+                document.getElementById('employee-month-score').textContent = monthScore;
+
+                // محاسبه رتبه
+                const allEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
+                const rankings = allEmployees.map(emp => {
+                    const empTasks = this.tasks.filter(task => 
+                        task.userId === emp.code && 
+                        task.date >= monthStart && 
+                        task.date <= monthEnd &&
+                        task.status === 'approved'
+                    );
+                    return {
+                        code: emp.code,
+                        score: empTasks.length * 10
+                    };
+                }).sort((a, b) => b.score - a.score);
+
+                const userRank = rankings.findIndex(rank => rank.code === this.currentUser.code) + 1;
+                document.getElementById('employee-rank').textContent = userRank;
+            }
+
+            updateAdminStats() {
+                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
+                document.getElementById('total-employees').textContent = activeEmployees.length;
+                document.getElementById('active-employees').textContent = activeEmployees.length;
+                
+                const today = new persianDate().format('YYYY/MM/DD');
+                const todayTasks = this.tasks.filter(task => task.date === today);
+                document.getElementById('today-tasks').textContent = todayTasks.length;
+                
+                const pendingTasks = this.tasks.filter(task => task.status === 'pending');
+                document.getElementById('pending-tasks').textContent = pendingTasks.length;
+                
+                const pendingRequests = this.requests.filter(request => request.status === 'pending');
+                document.getElementById('pending-requests').textContent = pendingRequests.length;
+                
+                const todayAttendance = this.attendance.filter(record => record.date === today && record.checkIn);
+                document.getElementById('today-attendance').textContent = todayAttendance.length;
+            }
+
+            // سیستم حضور و غیاب
+            initializeGPS() {
+                const gpsStatus = document.getElementById('employee-gps-status');
+                const gpsStatusText = document.getElementById('employee-gps-status-text');
+                
+                if (!navigator.geolocation) {
+                    gpsStatusText.textContent = 'مرورگر شما از GPS پشتیبانی نمی‌کند';
+                    gpsStatus.className = 'gps-status inactive';
+                    return;
+                }
+
+                gpsStatusText.textContent = 'در حال دریافت موقعیت...';
+                gpsStatus.className = 'gps-status';
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const inRange = this.checkLocationInRange(position);
+                        if (inRange) {
+                            gpsStatusText.textContent = 'موقعیت شما تأیید شد - شما در محدوده کاری هستید ✓';
+                            gpsStatus.className = 'gps-status active';
+                        } else {
+                            gpsStatusText.textContent = 'شما خارج از محدوده کاری هستید ✗';
+                            gpsStatus.className = 'gps-status inactive';
+                        }
+                    },
+                    (error) => {
+                        gpsStatusText.textContent = 'خطا در دریافت موقعیت: ' + this.getGPSErrorMessage(error);
+                        gpsStatus.className = 'gps-status inactive';
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            }
+
+            checkLocationInRange(position) {
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                const officeLat = this.settings.officeLat;
+                const officeLng = this.settings.officeLng;
+                
+                // محاسبه فاصله با فرمول Haversine
+                const R = 6371000; // شعاع زمین به متر
+                const dLat = this.toRad(userLat - officeLat);
+                const dLng = this.toRad(userLng - officeLng);
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(this.toRad(officeLat)) * Math.cos(this.toRad(userLat)) *
+                          Math.sin(dLng/2) * Math.sin(dLng/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                const distance = R * c;
+                
+                return distance <= 500; // 500 متر محدوده
+            }
+
+            toRad(degrees) {
+                return degrees * (Math.PI / 180);
+            }
+
+            getGPSErrorMessage(error) {
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        return "دسترسی به موقعیت مکانی رد شد";
+                    case error.POSITION_UNAVAILABLE:
+                        return "اطلاعات موقعیت مکانی در دسترس نیست";
+                    case error.TIMEOUT:
+                        return "دریافت موقعیت مکانی timeout خورد";
+                    default:
+                        return "خطای ناشناخته رخ داد";
+                }
+            }
+
+            handleCheckIn() {
+                const today = new persianDate().format('YYYY/MM/DD');
+                const time = new persianDate().format('HH:mm');
+                const dayOfWeek = this.getPersianDayOfWeek(new Date().getDay());
+
+                // بررسی GPS
+                if (!navigator.geolocation) {
+                    this.showAttendanceAlert('سیستم GPS در دسترس نیست', 'error');
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const inRange = this.checkLocationInRange(position);
+                        if (!inRange) {
+                            this.showAttendanceAlert('شما خارج از محدوده کاری هستید. امکان ثبت ورود وجود ندارد.', 'error');
+                            return;
+                        }
+
+                        this.processCheckIn(today, time, dayOfWeek);
+                    },
+                    (error) => {
+                        this.showAttendanceAlert('خطا در دریافت موقعیت: ' + this.getGPSErrorMessage(error), 'error');
+                    }
+                );
+            }
+
+            processCheckIn(today, time, dayOfWeek) {
+                const existingRecord = this.attendance.find(record => 
+                    record.userId === this.currentUser.code && record.date === today
+                );
+
+                if (existingRecord && existingRecord.checkIn) {
+                    this.showAttendanceAlert('ورود شما قبلاً ثبت شده است', 'error');
+                    return;
+                }
+
+                const attendanceRecord = {
+                    id: Date.now().toString(),
+                    userId: this.currentUser.code,
+                    userName: this.currentUser.name,
+                    date: today,
+                    dayOfWeek: dayOfWeek,
+                    checkIn: time,
+                    checkOut: null,
+                    status: 'present',
+                    overtime: 0
+                };
+
+                if (existingRecord) {
+                    Object.assign(existingRecord, attendanceRecord);
+                } else {
+                    this.attendance.push(attendanceRecord);
+                }
+
+                this.saveAttendance();
+                this.showAttendanceAlert(`ورود شما ثبت شد\nتاریخ: ${today}\nساعت: ${time}`, 'success');
+                this.loadEmployeeAttendance();
+                this.updateEmployeeStats();
+            }
+
+            handleCheckOut() {
+                const today = new persianDate().format('YYYY/MM/DD');
+                const time = new persianDate().format('HH:mm');
+
+                const todayRecord = this.attendance.find(record => 
+                    record.userId === this.currentUser.code && record.date === today
+                );
+
+                if (!todayRecord) {
+                    this.showAttendanceAlert('ابتدا باید ورود خود را ثبت کنید', 'error');
+                    return;
+                }
+
+                if (todayRecord.checkOut) {
+                    this.showAttendanceAlert('خروج شما قبلاً ثبت شده است', 'error');
+                    return;
+                }
+
+                todayRecord.checkOut = time;
+                todayRecord.overtime = this.calculateOvertime(todayRecord.checkOut);
+
+                this.saveAttendance();
+                this.showAttendanceAlert(`خروج شما ثبت شد\nتاریخ: ${today}\nساعت: ${time}`, 'success');
+                this.loadEmployeeAttendance();
+                this.updateEmployeeStats();
+            }
+
+            showAttendanceAlert(message, type) {
+                const alert = document.createElement('div');
+                alert.className = `attendance-alert attendance-${type}`;
+                alert.innerHTML = `
+                    <h3>${message}</h3>
+                `;
+                
+                document.body.appendChild(alert);
+                
+                setTimeout(() => {
+                    alert.remove();
+                }, 5000);
+            }
+
+            calculateWorkHours(checkIn, checkOut) {
+                const [inHour, inMinute] = checkIn.split(':').map(Number);
+                const [outHour, outMinute] = checkOut.split(':').map(Number);
+                
+                const totalMinutes = (outHour * 60 + outMinute) - (inHour * 60 + inMinute);
+                const hours = Math.floor(totalMinutes / 60);
+                const minutes = totalMinutes % 60;
+                
+                return `${hours}:${minutes.toString().padStart(2, '0')}`;
+            }
+
+            calculateOvertime(checkOutTime) {
+                const [endHour, endMinute] = this.settings.workEndTime.split(':').map(Number);
+                const [outHour, outMinute] = checkOutTime.split(':').map(Number);
+                
+                const endTotalMinutes = endHour * 60 + endMinute;
+                const outTotalMinutes = outHour * 60 + outMinute;
+                
+                if (outTotalMinutes <= endTotalMinutes) {
+                    return 0;
+                }
+                
+                const overtimeMinutes = outTotalMinutes - endTotalMinutes;
+                return (overtimeMinutes / 60).toFixed(2);
+            }
+
+            loadEmployeeAttendance() {
+                const tbody = document.querySelector('#employee-attendance-table tbody');
+                tbody.innerHTML = '';
+
+                const userAttendance = this.attendance
+                    .filter(record => record.userId === this.currentUser.code)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 10);
+
+                if (userAttendance.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="7" style="text-align: center; color: #64748b;">
+                            هیچ رکوردی یافت نشد
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                    return;
+                }
+
+                userAttendance.forEach(record => {
+                    const workHours = record.checkIn && record.checkOut ? 
+                        this.calculateWorkHours(record.checkIn, record.checkOut) : '-';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.date}</td>
+                        <td>${record.dayOfWeek}</td>
+                        <td>${record.checkIn || '-'}</td>
+                        <td>${record.checkOut || '-'}</td>
+                        <td>${workHours}</td>
+                        <td>${record.overtime > 0 ? record.overtime + ' ساعت' : '-'}</td>
+                        <td>
+                            <span class="status-badge ${record.checkIn ? 'completed' : 'pending'}">
+                                ${record.checkIn ? (record.checkOut ? 'کار تمام' : 'حاضر') : 'غایب'}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // سیستم مدیریت کارها
+            showTaskModal() {
+                const teamMembersSelect = document.getElementById('team-members');
+                teamMembersSelect.innerHTML = '';
+                
+                this.employees
+                    .filter(emp => emp.status === 'active' && emp.code !== this.currentUser.code && !emp.role)
+                    .forEach(emp => {
+                        const option = document.createElement('option');
+                        option.value = emp.code;
+                        option.textContent = emp.name;
+                        teamMembersSelect.appendChild(option);
+                    });
+
+                document.getElementById('employee-task-form').reset();
+                document.getElementById('before-photos-preview').innerHTML = '';
+                document.getElementById('after-photos-preview').innerHTML = '';
+                document.getElementById('team-members-group').style.display = 'none';
+
+                document.getElementById('employee-task-modal').classList.add('active');
+            }
+
+            submitTask() {
+                const form = document.getElementById('employee-task-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const teamMembers = document.getElementById('task-type').value === 'team' ? 
+                    Array.from(document.getElementById('team-members').selectedOptions).map(opt => opt.value) : [];
+
+                const task = {
+                    id: Date.now().toString(),
+                    userId: this.currentUser.code,
+                    userName: this.currentUser.name,
+                    title: document.getElementById('task-title').value,
+                    location: document.getElementById('task-location').value,
+                    date: document.getElementById('task-date').value,
+                    type: document.getElementById('task-type').value,
+                    teamMembers: teamMembers,
+                    description: document.getElementById('task-description').value,
+                    status: 'pending',
+                    workStatus: document.getElementById('task-status').value,
+                    beforePhotos: this.getImageData('before-photos-preview'),
+                    afterPhotos: this.getImageData('after-photos-preview'),
+                    createdAt: new Date().toISOString()
+                };
+
+                this.tasks.push(task);
+                this.saveTasks();
+                
+                document.getElementById('employee-task-modal').classList.remove('active');
+                this.showNotification('کار با موفقیت ثبت و برای مدیر ارسال شد', 'success');
+                this.loadEmployeeTasks();
+                this.updateEmployeeStats();
+            }
+
+            getImageData(previewId) {
+                const preview = document.getElementById(previewId);
+                const images = [];
+                preview.querySelectorAll('img').forEach(img => {
+                    images.push(img.src);
+                });
+                return images;
+            }
+
+            loadEmployeeTasks() {
+                const tbody = document.querySelector('#employee-tasks-table tbody');
+                tbody.innerHTML = '';
+
+                const userTasks = this.tasks
+                    .filter(task => task.userId === this.currentUser.code)
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                userTasks.forEach(task => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${task.title}</td>
+                        <td>${task.date}</td>
+                        <td>
+                            <span class="status-badge ${task.status === 'approved' ? 'completed' : 
+                                                     task.status === 'rejected' ? 'rejected' : 'pending'}">
+                                ${task.status === 'approved' ? '✅ تایید شده' : 
+                                  task.status === 'rejected' ? '❌ رد شده' : '⏳ در انتظار'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="ems.viewTaskDetails('${task.id}')">مشاهده</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            loadAdminTasks() {
+                const tbody = document.querySelector('#admin-tasks-table tbody');
+                tbody.innerHTML = '';
+
+                const allTasks = this.tasks.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                allTasks.forEach(task => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${task.userName}</td>
+                        <td>${task.title}</td>
+                        <td>${task.date}</td>
+                        <td>
+                            <span class="status-badge ${task.status === 'approved' ? 'completed' : 
+                                                     task.status === 'rejected' ? 'rejected' : 'pending'}">
+                                ${task.status === 'approved' ? 'تایید شده' : 
+                                  task.status === 'rejected' ? 'رد شده' : 'در انتظار'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="ems.viewTaskDetails('${task.id}')">مشاهده</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            loadAdminPendingTasks() {
+                const tbody = document.querySelector('#admin-pending-tasks-table tbody');
+                tbody.innerHTML = '';
+
+                const pendingTasks = this.tasks
+                    .filter(task => task.status === 'pending')
+                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+                pendingTasks.forEach(task => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${task.userName}</td>
+                        <td>${task.title}</td>
+                        <td>${task.date}</td>
+                        <td>
+                            <span class="status-badge pending">در انتظار</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="ems.viewTaskDetails('${task.id}')">مشاهده و بررسی</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            viewTaskDetails(taskId) {
+                const task = this.tasks.find(t => t.id === taskId);
+                if (!task) return;
+
+                this.currentTaskView = taskId;
+                
+                const isAdmin = this.currentUser.role === 'admin';
+
+                let teamMembersHtml = '';
+                if (task.type === 'team' && task.teamMembers.length > 0) {
+                    teamMembersHtml = `
+                        <div class="form-group">
+                            <label>اعضای تیم:</label>
+                            <div class="team-members-list">
+                                ${task.teamMembers.map(memberCode => {
+                                    const member = this.employees.find(emp => emp.code === memberCode);
+                                    return member ? `<span class="badge">${member.name}</span>` : '';
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let beforePhotosHtml = '';
+                if (task.beforePhotos && task.beforePhotos.length > 0) {
+                    beforePhotosHtml = `
+                        <div class="form-group">
+                            <label>عکس‌های قبل از کار:</label>
+                            <div class="image-gallery">
+                                ${task.beforePhotos.map((photo, index) => `
+                                    <div class="gallery-item">
+                                        <img src="${photo}" alt="عکس قبل از کار ${index + 1}" onclick="ems.viewImage('${photo}')">
+                                        <div class="gallery-actions">
+                                            <button class="gallery-btn" onclick="ems.viewImage('${photo}')">
+                                                <i class="fas fa-search-plus"></i>
+                                            </button>
+                                            <button class="gallery-btn" onclick="ems.downloadImage('${photo}', 'before_${index + 1}.jpg')">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                let afterPhotosHtml = '';
+                if (task.afterPhotos && task.afterPhotos.length > 0) {
+                    afterPhotosHtml = `
+                        <div class="form-group">
+                            <label>عکس‌های بعد از کار:</label>
+                            <div class="image-gallery">
+                                ${task.afterPhotos.map((photo, index) => `
+                                    <div class="gallery-item">
+                                        <img src="${photo}" alt="عکس بعد از کار ${index + 1}" onclick="ems.viewImage('${photo}')">
+                                        <div class="gallery-actions">
+                                            <button class="gallery-btn" onclick="ems.viewImage('${photo}')">
+                                                <i class="fas fa-search-plus"></i>
+                                            </button>
+                                            <button class="gallery-btn" onclick="ems.downloadImage('${photo}', 'after_${index + 1}.jpg')">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const content = `
+                    <div class="task-details">
+                        <div class="form-group">
+                            <label>عنوان کار:</label>
+                            <div class="form-control" style="background: #f8f9fa;">${task.title}</div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>محل کار:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${task.location}</div>
+                            </div>
+                            <div class="form-group">
+                                <label>تاریخ کار:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${task.date}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>نوع کار:</label>
+                                <div class="form-control" style="background: #f8f9fa;">
+                                    ${task.type === 'individual' ? 'فردی' : 'گروهی'}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>وضعیت کار:</label>
+                                <div class="form-control" style="background: #f8f9fa;">
+                                    ${task.workStatus === 'completed' ? 'کار تمام شده' : 
+                                      task.workStatus === 'incomplete' ? 'کار نیمه تمام' : 'کار تکرار شده'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        ${teamMembersHtml}
+                        
+                        <div class="form-group">
+                            <label>توضیحات کار:</label>
+                            <div class="form-control" style="background: #f8f9fa; min-height: 80px;">${task.description}</div>
+                        </div>
+                        
+                        ${beforePhotosHtml}
+                        ${afterPhotosHtml}
+                    </div>
+                `;
+
+                document.getElementById('task-details-content').innerHTML = content;
+                
+                const modalFooter = document.querySelector('#admin-task-details-modal .modal-footer');
+                if (isAdmin && task.status === 'pending') {
+                    modalFooter.innerHTML = `
+                        <button class="btn btn-danger" id="admin-reject-task-btn">رد کار</button>
+                        <button class="btn btn-success" id="admin-approve-task-btn">تایید کار</button>
+                        <button class="btn btn-glass close-modal">بستن</button>
+                    `;
+                    
+                    document.getElementById('admin-approve-task-btn').addEventListener('click', () => this.approveTask());
+                    document.getElementById('admin-reject-task-btn').addEventListener('click', () => this.rejectTask());
+                } else {
+                    modalFooter.innerHTML = `
+                        <button class="btn btn-glass close-modal">بستن</button>
+                    `;
+                }
+                
+                document.getElementById('admin-task-details-modal').classList.add('active');
+            }
+
+            approveTask() {
+                if (!this.currentTaskView) return;
+
+                const taskIndex = this.tasks.findIndex(t => t.id === this.currentTaskView);
+                if (taskIndex !== -1) {
+                    this.tasks[taskIndex].status = 'approved';
+                    this.saveTasks();
+                    
+                    document.getElementById('admin-task-details-modal').classList.remove('active');
+                    this.showNotification('کار با موفقیت تایید شد', 'success');
+                    this.loadAdminTasks();
+                    this.loadAdminPendingTasks();
+                }
+            }
+
+            rejectTask() {
+                if (!this.currentTaskView) return;
+
+                const taskIndex = this.tasks.findIndex(t => t.id === this.currentTaskView);
+                if (taskIndex !== -1) {
+                    this.tasks[taskIndex].status = 'rejected';
+                    this.saveTasks();
+                    
+                    document.getElementById('admin-task-details-modal').classList.remove('active');
+                    this.showNotification('کار با موفقیت رد شد', 'success');
+                    this.loadAdminTasks();
+                    this.loadAdminPendingTasks();
+                }
+            }
+
+            // سیستم مدیریت درخواست‌ها
+            showDailyLeaveModal() {
+                document.getElementById('daily-leave-modal').classList.add('active');
+            }
+
+            showHourlyLeaveModal() {
+                document.getElementById('hourly-leave-modal').classList.add('active');
+            }
+
+            showMissionModal() {
+                document.getElementById('mission-modal').classList.add('active');
+            }
+
+            submitDailyLeave() {
+                const form = document.getElementById('daily-leave-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const startDateStr = document.getElementById('daily-start-date').value;
+                const endDateStr = document.getElementById('daily-end-date').value;
+                const daysCount = parseInt(document.getElementById('leave-days-count').textContent);
+
+                if (daysCount <= 0) {
+                    this.showNotification('تاریخ پایان باید بعد از تاریخ شروع باشد', 'error');
+                    return;
+                }
+
+                if (daysCount > 30) {
+                    this.showNotification('مدت مرخصی نمی‌تواند بیشتر از ۳۰ روز باشد', 'error');
+                    return;
+                }
+
+                const request = {
+                    id: Date.now().toString(),
+                    userId: this.currentUser.code,
+                    userName: this.currentUser.name,
+                    type: 'daily_leave',
+                    startDate: startDateStr,
+                    endDate: endDateStr,
+                    daysCount: daysCount,
+                    reason: document.getElementById('daily-reason').value,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+
+                this.requests.push(request);
+                this.saveRequests();
+                
+                document.getElementById('daily-leave-modal').classList.remove('active');
+                this.showNotification(`درخواست مرخصی ${daysCount} روزه با موفقیت ارسال شد`, 'success');
+                this.loadEmployeeRequests();
+            }
+
+            submitHourlyLeave() {
+                const form = document.getElementById('hourly-leave-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const startTime = document.getElementById('hourly-start-time').value;
+                const endTime = document.getElementById('hourly-end-time').value;
+                
+                const hoursCount = this.calculateHoursDifference(startTime, endTime);
+
+                const request = {
+                    id: Date.now().toString(),
+                    userId: this.currentUser.code,
+                    userName: this.currentUser.name,
+                    type: 'hourly_leave',
+                    date: document.getElementById('hourly-date').value,
+                    startTime: startTime,
+                    endTime: endTime,
+                    hoursCount: hoursCount,
+                    reason: document.getElementById('hourly-reason').value,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+
+                this.requests.push(request);
+                this.saveRequests();
+                
+                document.getElementById('hourly-leave-modal').classList.remove('active');
+                this.showNotification(`درخواست مرخصی ${this.formatHours(hoursCount)} با موفقیت ارسال شد`, 'success');
+                this.loadEmployeeRequests();
+            }
+
+            calculateHoursDifference(startTime, endTime) {
+                const [startHour, startMinute] = startTime.split(':').map(Number);
+                const [endHour, endMinute] = endTime.split(':').map(Number);
+                
+                const startTotalMinutes = startHour * 60 + startMinute;
+                const endTotalMinutes = endHour * 60 + endMinute;
+                
+                const differenceMinutes = endTotalMinutes - startTotalMinutes;
+                
+                return (differenceMinutes / 60).toFixed(2);
+            }
+
+            formatHours(hours) {
+                const totalMinutes = hours * 60;
+                const hoursPart = Math.floor(totalMinutes / 60);
+                const minutesPart = Math.round(totalMinutes % 60);
+                
+                if (hoursPart === 0) {
+                    return `${minutesPart} دقیقه`;
+                } else if (minutesPart === 0) {
+                    return `${hoursPart} ساعت`;
+                } else {
+                    return `${hoursPart} ساعت و ${minutesPart} دقیقه`;
+                }
+            }
+
+            submitMission() {
+                const form = document.getElementById('mission-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const request = {
+                    id: Date.now().toString(),
+                    userId: this.currentUser.code,
+                    userName: this.currentUser.name,
+                    type: 'mission',
+                    date: document.getElementById('mission-date').value,
+                    location: document.getElementById('mission-location').value,
+                    reason: document.getElementById('mission-reason').value,
+                    description: document.getElementById('mission-description').value,
+                    status: 'pending',
+                    createdAt: new Date().toISOString()
+                };
+
+                this.requests.push(request);
+                this.saveRequests();
+                
+                document.getElementById('mission-modal').classList.remove('active');
+                this.showNotification('درخواست مأموریت با موفقیت ارسال شد', 'success');
+                this.loadEmployeeRequests();
+            }
+
+            loadEmployeeRequests() {
+                const tbody = document.querySelector('#employee-requests-table tbody');
+                tbody.innerHTML = '';
+
+                const userRequests = this.requests
+                    .filter(request => request.userId === this.currentUser.code)
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                userRequests.forEach(request => {
+                    let details = '';
+                    let displayDate = '';
+
+                    switch(request.type) {
+                        case 'daily_leave':
+                            details = `${request.daysCount} روز - ${request.reason}`;
+                            displayDate = `${request.startDate} تا ${request.endDate}`;
+                            break;
+                        case 'hourly_leave':
+                            details = `از ${request.startTime} تا ${request.endTime} (${this.formatHours(request.hoursCount)}) - ${request.reason}`;
+                            displayDate = request.date;
+                            break;
+                        case 'mission':
+                            details = `${request.reason} - ${request.description || 'بدون توضیحات'}`;
+                            displayDate = request.date;
+                            break;
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${this.getRequestTypeText(request.type)}</td>
+                        <td>${displayDate}</td>
+                        <td>${details}</td>
+                        <td>
+                            <span class="status-badge ${request.status === 'approved' ? 'completed' : 
+                                                     request.status === 'rejected' ? 'rejected' : 'pending'}">
+                                ${request.status === 'approved' ? '✅ تایید شده' : 
+                                  request.status === 'rejected' ? '❌ رد شده' : '⏳ در انتظار'}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            loadAdminRequests() {
+                const tbody = document.querySelector('#admin-requests-table tbody');
+                tbody.innerHTML = '';
+
+                const allRequests = this.requests.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+                allRequests.forEach(request => {
+                    let details = '';
+                    let displayDate = '';
+
+                    switch(request.type) {
+                        case 'daily_leave':
+                            details = `${request.daysCount} روز - ${request.reason}`;
+                            displayDate = `${request.startDate} تا ${request.endDate}`;
+                            break;
+                        case 'hourly_leave':
+                            details = `از ${request.startTime} تا ${request.endTime} (${this.formatHours(request.hoursCount)}) - ${request.reason}`;
+                            displayDate = request.date;
+                            break;
+                        case 'mission':
+                            details = `${request.reason} - ${request.description || 'بدون توضیحات'}`;
+                            displayDate = request.date;
+                            break;
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${request.userName}</td>
+                        <td>${this.getRequestTypeText(request.type)}</td>
+                        <td>${displayDate}</td>
+                        <td>${details}</td>
+                        <td>
+                            <span class="status-badge ${request.status === 'approved' ? 'completed' : 
+                                                     request.status === 'rejected' ? 'rejected' : 'pending'}">
+                                ${request.status === 'approved' ? 'تایید شده' : 
+                                  request.status === 'rejected' ? 'رد شده' : 'در انتظار'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="ems.viewRequestDetails('${request.id}')">مشاهده</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            loadAdminPendingRequests() {
+                const tbody = document.querySelector('#admin-pending-requests-table tbody');
+                tbody.innerHTML = '';
+
+                const pendingRequests = this.requests
+                    .filter(request => request.status === 'pending')
+                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+                pendingRequests.forEach(request => {
+                    let details = '';
+                    let displayDate = '';
+
+                    switch(request.type) {
+                        case 'daily_leave':
+                            details = `${request.daysCount} روز - ${request.reason}`;
+                            displayDate = `${request.startDate} تا ${request.endDate}`;
+                            break;
+                        case 'hourly_leave':
+                            details = `از ${request.startTime} تا ${request.endTime} (${this.formatHours(request.hoursCount)}) - ${request.reason}`;
+                            displayDate = request.date;
+                            break;
+                        case 'mission':
+                            details = `${request.reason} - ${request.description || 'بدون توضیحات'}`;
+                            displayDate = request.date;
+                            break;
+                    }
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${request.userName}</td>
+                        <td>${this.getRequestTypeText(request.type)}</td>
+                        <td>${displayDate}</td>
+                        <td>${details}</td>
+                        <td>
+                            <span class="status-badge pending">در انتظار</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="ems.viewRequestDetails('${request.id}')">مشاهده و بررسی</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            viewRequestDetails(requestId) {
+                const request = this.requests.find(r => r.id === requestId);
+                if (!request) return;
+
+                this.currentRequestView = requestId;
+                
+                const isAdmin = this.currentUser.role === 'admin';
+
+                let detailsHtml = '';
+                switch(request.type) {
+                    case 'daily_leave':
+                        detailsHtml = `
+                            <div class="form-group">
+                                <label>تاریخ شروع:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${request.startDate}</div>
+                            </div>
+                            <div class="form-group">
+                                <label>تاریخ پایان:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${request.endDate}</div>
+                            </div>
+                            <div class="form-group">
+                                <label>تعداد روز:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${request.daysCount} روز</div>
+                            </div>
+                        `;
+                        break;
+                    case 'hourly_leave':
+                        detailsHtml = `
+                            <div class="form-group">
+                                <label>تاریخ:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${request.date}</div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>ساعت شروع:</label>
+                                    <div class="form-control" style="background: #f8f9fa;">${request.startTime}</div>
+                                </div>
+                                <div class="form-group">
+                                    <label>ساعت پایان:</label>
+                                    <div class="form-control" style="background: #f8f9fa;">${request.endTime}</div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>مدت زمان:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${this.formatHours(request.hoursCount)}</div>
+                            </div>
+                        `;
+                        break;
+                    case 'mission':
+                        detailsHtml = `
+                            <div class="form-group">
+                                <label>تاریخ:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${request.date}</div>
+                            </div>
+                            <div class="form-group">
+                                <label>محل مأموریت:</label>
+                                <div class="form-control" style="background: #f8f9fa;">${request.location}</div>
+                            </div>
+                        `;
+                        break;
+                }
+
+                const content = `
+                    <div class="request-details">
+                        <div class="form-group">
+                            <label>کارمند:</label>
+                            <div class="form-control" style="background: #f8f9fa;">${request.userName}</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>نوع درخواست:</label>
+                            <div class="form-control" style="background: #f8f9fa;">
+                                ${this.getRequestTypeText(request.type)}
+                            </div>
+                        </div>
+                        
+                        ${detailsHtml}
+                        
+                        <div class="form-group">
+                            <label>علت:</label>
+                            <div class="form-control" style="background: #f8f9fa; min-height: 80px;">${request.reason}</div>
+                        </div>
+                        
+                        ${request.description ? `
+                        <div class="form-group">
+                            <label>توضیحات:</label>
+                            <div class="form-control" style="background: #f8f9fa; min-height: 80px;">${request.description}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                document.getElementById('request-details-content').innerHTML = content;
+                
+                const modalFooter = document.querySelector('#admin-request-details-modal .modal-footer');
+                if (isAdmin && request.status === 'pending') {
+                    modalFooter.innerHTML = `
+                        <button class="btn btn-danger" id="admin-reject-request-btn">رد درخواست</button>
+                        <button class="btn btn-success" id="admin-approve-request-btn">تایید درخواست</button>
+                        <button class="btn btn-glass close-modal">بستن</button>
+                    `;
+                    
+                    document.getElementById('admin-approve-request-btn').addEventListener('click', () => this.approveRequest());
+                    document.getElementById('admin-reject-request-btn').addEventListener('click', () => this.rejectRequest());
+                } else {
+                    modalFooter.innerHTML = `
+                        <button class="btn btn-glass close-modal">بستن</button>
+                    `;
+                }
+                
+                document.getElementById('admin-request-details-modal').classList.add('active');
+            }
+
+            approveRequest() {
+                if (!this.currentRequestView) return;
+
+                const requestIndex = this.requests.findIndex(r => r.id === this.currentRequestView);
+                if (requestIndex !== -1) {
+                    this.requests[requestIndex].status = 'approved';
+                    this.saveRequests();
+                    
+                    document.getElementById('admin-request-details-modal').classList.remove('active');
+                    this.showNotification('درخواست با موفقیت تایید شد', 'success');
+                    this.loadAdminRequests();
+                    this.loadAdminPendingRequests();
+                }
+            }
+
+            rejectRequest() {
+                if (!this.currentRequestView) return;
+
+                const requestIndex = this.requests.findIndex(r => r.id === this.currentRequestView);
+                if (requestIndex !== -1) {
+                    this.requests[requestIndex].status = 'rejected';
+                    this.saveRequests();
+                    
+                    document.getElementById('admin-request-details-modal').classList.remove('active');
+                    this.showNotification('درخواست با موفقیت رد شد', 'success');
+                    this.loadAdminRequests();
+                    this.loadAdminPendingRequests();
+                }
+            }
+
+            getRequestTypeText(type) {
+                const types = {
+                    'daily_leave': 'مرخصی روزانه',
+                    'hourly_leave': 'مرخصی ساعتی',
+                    'mission': 'مأموریت'
+                };
+                return types[type] || type;
+            }
+
+            // سیستم مدیریت کشیک
+            showDutyControls() {
+                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
+                
+                if (activeEmployees.length < 4) {
+                    this.showNotification('حداقل ۴ کارمند فعال برای ایجاد کشیک نیاز است', 'error');
+                    return;
+                }
+
+                const employeesList = document.getElementById('active-employees-list');
+                employeesList.innerHTML = activeEmployees.map(emp => 
+                    `<span class="badge">${emp.name}</span>`
+                ).join('');
+
+                this.createMonthlyDutyTable();
+                document.getElementById('duty-controls').style.display = 'block';
+                document.getElementById('admin-finalize-duty-btn').style.display = 'inline-flex';
+            }
+
+            createMonthlyDutyTable() {
+                const tbody = document.querySelector('#admin-duty-table tbody');
+                tbody.innerHTML = '';
+
+                const currentMonth = new persianDate().month();
+                const currentYear = new persianDate().year();
+                const daysInMonth = new persianDate([currentYear, currentMonth, 1]).daysInMonth();
+
+                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new persianDate([currentYear, currentMonth, day]);
+                    const dateStr = date.format('YYYY/MM/DD');
+                    const dayOfWeek = this.getPersianDayOfWeek(date.weekday());
+                    
+                    const existingDuty = this.dutySchedule.find(duty => duty.date === dateStr);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${dateStr}</td>
+                        <td>${dayOfWeek}</td>
+                        <td class="duty-cell">
+                            <select class="duty-select" data-date="${dateStr}" data-type="dayDuty">
+                                <option value="">انتخاب کنید</option>
+                                ${activeEmployees.map(emp => 
+                                    `<option value="${emp.code}" ${existingDuty?.dayDuty === emp.code ? 'selected' : ''}>${emp.name}</option>`
+                                ).join('')}
+                            </select>
+                        </td>
+                        <td class="duty-cell">
+                            <select class="duty-select" data-date="${dateStr}" data-type="nightDuty">
+                                <option value="">انتخاب کنید</option>
+                                ${activeEmployees.map(emp => 
+                                    `<option value="${emp.code}" ${existingDuty?.nightDuty === emp.code ? 'selected' : ''}>${emp.name}</option>`
+                                ).join('')}
+                            </select>
+                        </td>
+                        <td class="duty-cell">
+                            <select class="duty-select" data-date="${dateStr}" data-type="assistantDuty">
+                                <option value="">انتخاب کنید</option>
+                                ${activeEmployees.map(emp => 
+                                    `<option value="${emp.code}" ${existingDuty?.assistantDuty === emp.code ? 'selected' : ''}>${emp.name}</option>`
+                                ).join('')}
+                            </select>
+                        </td>
+                        <td class="duty-cell">
+                            <select class="duty-select" data-date="${dateStr}" data-type="oncallDuty">
+                                <option value="">انتخاب کنید</option>
+                                ${activeEmployees.map(emp => 
+                                    `<option value="${emp.code}" ${existingDuty?.oncallDuty === emp.code ? 'selected' : ''}>${emp.name}</option>`
+                                ).join('')}
+                            </select>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="ems.deleteDutyByDate('${dateStr}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+
+                document.querySelectorAll('.duty-select').forEach(select => {
+                    select.addEventListener('change', (e) => {
+                        this.handleDutyChange(e.target);
+                    });
+                });
+            }
+
+            handleDutyChange(selectElement) {
+                const date = selectElement.dataset.date;
+                const type = selectElement.dataset.type;
+                const employeeCode = selectElement.value;
+
+                if (!employeeCode) {
+                    this.removeDutyAssignment(date, type);
+                    return;
+                }
+
+                let duty = this.dutySchedule.find(d => d.date === date);
+                
+                if (!duty) {
+                    const persianDateObj = new persianDate(date);
+                    duty = {
+                        id: Date.now().toString(),
+                        date: date,
+                        dayOfWeek: this.getPersianDayOfWeek(persianDateObj.weekday()),
+                        dayDuty: '',
+                        nightDuty: '',
+                        assistantDuty: '',
+                        oncallDuty: ''
+                    };
+                    this.dutySchedule.push(duty);
+                }
+
+                duty[type] = employeeCode;
+                this.saveDutySchedule();
+                this.showNotification('کشیک با موفقیت ثبت شد', 'success');
+            }
+
+            removeDutyAssignment(date, type) {
+                const duty = this.dutySchedule.find(d => d.date === date);
+                if (duty) {
+                    duty[type] = '';
+                    if (!duty.dayDuty && !duty.nightDuty && !duty.assistantDuty && !duty.oncallDuty) {
+                        this.dutySchedule = this.dutySchedule.filter(d => d.date !== date);
+                    }
+                    this.saveDutySchedule();
+                }
+            }
+
+            deleteDutyByDate(date) {
+                if (confirm('آیا از حذف کشیک این تاریخ اطمینان دارید؟')) {
+                    this.dutySchedule = this.dutySchedule.filter(duty => duty.date !== date);
+                    this.saveDutySchedule();
+                    this.createMonthlyDutyTable();
+                    this.showNotification('کشیک با موفقیت حذف شد', 'success');
+                }
+            }
+
+            finalizeDutySchedule() {
+                const emptyDays = this.dutySchedule.filter(duty => 
+                    !duty.dayDuty || !duty.nightDuty || !duty.assistantDuty || !duty.oncallDuty
+                );
+
+                if (emptyDays.length > 0) {
+                    this.showNotification('لطفاً تمام کشیک‌ها را تکمیل کنید', 'error');
+                    return;
+                }
+
+                this.showNotification('کشیک‌ها با موفقیت ثبت نهایی شدند', 'success');
+                document.getElementById('duty-controls').style.display = 'none';
+                document.getElementById('admin-finalize-duty-btn').style.display = 'none';
+                this.loadAdminDuty();
+            }
+
+            printDutySchedule() {
+                window.print();
+            }
+
+            loadAdminDuty() {
+                const tbody = document.querySelector('#admin-duty-table tbody');
+                tbody.innerHTML = '';
+
+                if (this.dutySchedule.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td colspan="7" style="text-align: center; color: #64748b;">
+                            هیچ کشیکی ثبت نشده است
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                    return;
+                }
+
+                this.dutySchedule.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(duty => {
+                    const dayDutyEmployee = this.employees.find(emp => emp.code === duty.dayDuty);
+                    const nightDutyEmployee = this.employees.find(emp => emp.code === duty.nightDuty);
+                    const assistantDutyEmployee = this.employees.find(emp => emp.code === duty.assistantDuty);
+                    const oncallDutyEmployee = this.employees.find(emp => emp.code === duty.oncallDuty);
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${duty.date}</td>
+                        <td>${duty.dayOfWeek}</td>
+                        <td>${dayDutyEmployee ? dayDutyEmployee.name : '-'}</td>
+                        <td>${nightDutyEmployee ? nightDutyEmployee.name : '-'}</td>
+                        <td>${assistantDutyEmployee ? assistantDutyEmployee.name : '-'}</td>
+                        <td>${oncallDutyEmployee ? oncallDutyEmployee.name : '-'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="ems.deleteDutyByDate('${duty.date}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            loadEmployeeDuty() {
+                const tbody = document.querySelector('#employee-duty-table tbody');
+                tbody.innerHTML = '';
+
+                const userDuties = this.dutySchedule
+                    .filter(duty => 
+                        duty.dayDuty === this.currentUser.code ||
+                        duty.nightDuty === this.currentUser.code ||
+                        duty.assistantDuty === this.currentUser.code ||
+                        duty.oncallDuty === this.currentUser.code
+                    )
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                userDuties.forEach(duty => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${duty.date}</td>
+                        <td>${duty.dayOfWeek}</td>
+                        <td>${duty.dayDuty === this.currentUser.code ? '✅' : ''}</td>
+                        <td>${duty.nightDuty === this.currentUser.code ? '✅' : ''}</td>
+                        <td>${duty.assistantDuty === this.currentUser.code ? '✅' : ''}</td>
+                        <td>${duty.oncallDuty === this.currentUser.code ? '✅' : ''}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // سیستم مدیریت کارکنان
+            showEmployeeModal() {
+                document.getElementById('admin-employee-modal').classList.add('active');
+            }
+
+            saveEmployee() {
+                const form = document.getElementById('admin-employee-form');
+                if (!form.checkValidity()) {
+                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+                    return;
+                }
+
+                const employee = {
+                    code: document.getElementById('admin-emp-code').value,
+                    name: document.getElementById('admin-emp-name').value,
+                    phone: document.getElementById('admin-emp-phone').value,
+                    password: document.getElementById('admin-emp-password').value,
+                    status: 'active'
+                };
+
+                if (this.employees.find(emp => emp.code === employee.code)) {
+                    this.showNotification('کد پرسنلی تکراری است', 'error');
+                    return;
+                }
+
+                this.employees.push(employee);
+                this.saveEmployees();
+                
+                document.getElementById('admin-employee-modal').classList.remove('active');
+                form.reset();
+                this.showNotification('کارمند با موفقیت اضافه شد', 'success');
+                this.loadAdminEmployees();
+            }
+
+            loadAdminEmployees() {
+                const tbody = document.querySelector('#admin-employees-table tbody');
+                tbody.innerHTML = '';
+
+                const activeEmployees = this.employees.filter(emp => emp.status === 'active' && !emp.role);
+
+                activeEmployees.forEach(emp => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${emp.code}</td>
+                        <td>${emp.name}</td>
+                        <td>${emp.phone}</td>
+                        <td>
+                            <span class="status-badge completed">فعال</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-danger" onclick="ems.deleteEmployee('${emp.code}')">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            deleteEmployee(code) {
+                if (confirm('آیا از حذف این کارمند اطمینان دارید؟')) {
+                    const employeeIndex = this.employees.findIndex(emp => emp.code === code);
+                    if (employeeIndex !== -1) {
+                        this.employees[employeeIndex].status = 'inactive';
+                        this.saveEmployees();
+                        this.showNotification('کارمند با موفقیت حذف شد', 'success');
+                        this.loadAdminEmployees();
+                    }
+                }
+            }
+
+            // سیستم گزارش‌گیری
+            loadAdminReports() {
+                // فقط برای مقداردهی اولیه
+            }
+
+            generateReport() {
+                const reportType = document.getElementById('admin-report-type').value;
+                const reportMonth = parseInt(document.getElementById('admin-report-month').value);
+                const reportEmployee = document.getElementById('admin-report-employee').value;
+                
+                let reportData = [];
+                
+                switch(reportType) {
+                    case 'attendance':
+                        reportData = this.generateAttendanceReport(reportMonth, reportEmployee);
+                        break;
+                    case 'tasks':
+                        reportData = this.generateTasksReport(reportMonth, reportEmployee);
+                        break;
+                    case 'requests':
+                        reportData = this.generateRequestsReport(reportMonth, reportEmployee);
+                        break;
+                    case 'overtime':
+                        reportData = this.generateOvertimeReport(reportMonth, reportEmployee);
+                        break;
+                }
+                
+                this.displayReport(reportData);
+                document.getElementById('admin-print-report-btn').style.display = 'inline-flex';
+            }
+
+            generateAttendanceReport(month, employeeCode) {
+                const reportData = [];
+                const activeEmployees = employeeCode === 'all' 
+                    ? this.employees.filter(emp => emp.status === 'active' && !emp.role)
+                    : this.employees.filter(emp => emp.code === employeeCode && emp.status === 'active' && !emp.role);
+                
+                activeEmployees.forEach(employee => {
+                    const employeeAttendance = this.attendance.filter(record => 
+                        record.userId === employee.code && 
+                        new persianDate(record.date).month() === month
+                    );
+                    
+                    const presentDays = employeeAttendance.filter(record => record.checkIn).length;
+                    const totalOvertime = employeeAttendance.reduce((sum, record) => sum + parseFloat(record.overtime || 0), 0);
+                    
+                    reportData.push({
+                        date: `ماه ${this.getPersianMonthName(month)}`,
+                        description: `حضور و غیاب ${employee.name}`,
+                        value: `${presentDays} روز حاضر`,
+                        status: presentDays > 20 ? 'completed' : 'pending'
+                    });
+                    
+                    if (totalOvertime > 0) {
+                        reportData.push({
+                            date: `ماه ${this.getPersianMonthName(month)}`,
+                            description: `اضافه کار ${employee.name}`,
+                            value: `${totalOvertime} ساعت`,
+                            status: 'completed'
+                        });
+                    }
+                });
+                
+                return reportData;
+            }
+
+            generateTasksReport(month, employeeCode) {
+                const tasksThisMonth = employeeCode === 'all'
+                    ? this.tasks.filter(task => new persianDate(task.date).month() === month)
+                    : this.tasks.filter(task => new persianDate(task.date).month() === month && task.userId === employeeCode);
+                
+                const completedTasks = tasksThisMonth.filter(task => task.status === 'approved').length;
+                const pendingTasks = tasksThisMonth.filter(task => task.status === 'pending').length;
+                const rejectedTasks = tasksThisMonth.filter(task => task.status === 'rejected').length;
+                
+                return [
+                    {
+                        date: `ماه ${this.getPersianMonthName(month)}`,
+                        description: 'کارهای تکمیل شده',
+                        value: `${completedTasks} مورد`,
+                        status: 'completed'
+                    },
+                    {
+                        date: `ماه ${this.getPersianMonthName(month)}`,
+                        description: 'کارهای در انتظار',
+                        value: `${pendingTasks} مورد`,
+                        status: 'pending'
+                    },
+                    {
+                        date: `ماه ${this.getPersianMonthName(month)}`,
+                        description: 'کارهای رد شده',
+                        value: `${rejectedTasks} مورد`,
+                        status: 'rejected'
+                    }
+                ];
+            }
+
+            generateRequestsReport(month, employeeCode) {
+                const requestsThisMonth = employeeCode === 'all'
+                    ? this.requests.filter(request => new persianDate(request.date || request.startDate).month() === month)
+                    : this.requests.filter(request => new persianDate(request.date || request.startDate).month() === month && request.userId === employeeCode);
+                
+                const approvedRequests = requestsThisMonth.filter(req => req.status === 'approved').length;
+                const pendingRequests = requestsThisMonth.filter(req => req.status === 'pending').length;
+                const rejectedRequests = requestsThisMonth.filter(req => req.status === 'rejected').length;
+                
+                return [
+                    {
+                        date: `ماه ${this.getPersianMonthName(month)}`,
+                        description: 'درخواست‌های تایید شده',
+                        value: `${approvedRequests} مورد`,
+                        status: 'completed'
+                    },
+                    {
+                        date: `ماه ${this.getPersianMonthName(month)}`,
+                        description: 'درخواست‌های در انتظار',
+                        value: `${pendingRequests} مورد`,
+                        status: 'pending'
+                    },
+                    {
+                        date: `ماه ${this.getPersianMonthName(month)}`,
+                        description: 'درخواست‌های رد شده',
+                        value: `${rejectedRequests} مورد`,
+                        status: 'rejected'
+                    }
+                ];
+            }
+
+            generateOvertimeReport(month, employeeCode) {
+                const reportData = [];
+                const activeEmployees = employeeCode === 'all'
+                    ? this.employees.filter(emp => emp.status === 'active' && !emp.role)
+                    : this.employees.filter(emp => emp.code === employeeCode && emp.status === 'active' && !emp.role);
+                
+                activeEmployees.forEach(employee => {
+                    const employeeOvertime = this.attendance
+                        .filter(record => 
+                            record.userId === employee.code && 
+                            new persianDate(record.date).month() === month &&
+                            record.overtime > 0
+                        )
+                        .reduce((sum, record) => sum + parseFloat(record.overtime), 0);
+                    
+                    if (employeeOvertime > 0) {
+                        reportData.push({
+                            date: `ماه ${this.getPersianMonthName(month)}`,
+                            description: `مجموع اضافه کار ${employee.name}`,
+                            value: `${employeeOvertime.toFixed(2)} ساعت`,
+                            status: 'completed'
+                        });
+                    }
+                });
+                
+                if (reportData.length === 0) {
+                    reportData.push({
+                        date: `ماه ${this.getPersianMonthName(month)}`,
+                        description: 'اضافه کاری ثبت نشده',
+                        value: '0 ساعت',
+                        status: 'pending'
+                    });
+                }
+                
+                return reportData;
+            }
+
+            getPersianMonthName(month) {
+                const months = [
+                    'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+                    'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+                ];
+                return months[month - 1] || '';
+            }
+
+            displayReport(reportData) {
+                const tbody = document.querySelector('#admin-report-table tbody');
+                tbody.innerHTML = '';
+
+                reportData.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.date}</td>
+                        <td>${item.description}</td>
+                        <td>${item.value}</td>
+                        <td>
+                            <span class="status-badge ${item.status}">
+                                ${item.status === 'completed' ? 'تکمیل' : 
+                                  item.status === 'pending' ? 'در انتظار' : 'رد شده'}
+                            </span>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            printReport() {
+                window.print();
+            }
+
+            // سیستم تنظیمات
+            loadAdminSettings() {
+                document.getElementById('work-start-time').value = this.settings.workStartTime;
+                document.getElementById('work-end-time').value = this.settings.workEndTime;
+                document.getElementById('work-start-date').value = this.settings.workStartDate;
+                document.getElementById('work-end-date').value = this.settings.workEndDate;
+                document.getElementById('office-lat').value = this.settings.officeLat;
+                document.getElementById('office-lng').value = this.settings.officeLng;
+            }
+
+            showMapForLocation() {
+                const mapContainer = document.getElementById('admin-map');
+                mapContainer.style.display = 'block';
+                
+                if (!this.adminMap) {
+                    this.adminMap = L.map('admin-map').setView([this.settings.officeLat, this.settings.officeLng], 15);
+                    
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors'
+                    }).addTo(this.adminMap);
+                    
+                    this.officeMarker = L.marker([this.settings.officeLat, this.settings.officeLng])
+                        .addTo(this.adminMap)
+                        .bindPopup('موقعیت دفتر')
+                        .openPopup();
+                    
+                    this.adminMap.on('click', (e) => {
+                        const { lat, lng } = e.latlng;
+                        
+                        if (this.officeMarker) {
+                            this.adminMap.removeLayer(this.officeMarker);
+                        }
+                        
+                        this.officeMarker = L.marker([lat, lng])
+                            .addTo(this.adminMap)
+                            .bindPopup('موقعیت جدید دفتر')
+                            .openPopup();
+                        
+                        document.getElementById('office-lat').value = lat;
+                        document.getElementById('office-lng').value = lng;
+                    });
+                }
+            }
+
+            saveSettings() {
+                this.settings = {
+                    workStartTime: document.getElementById('work-start-time').value,
+                    workEndTime: document.getElementById('work-end-time').value,
+                    workStartDate: document.getElementById('work-start-date').value,
+                    workEndDate: document.getElementById('work-end-date').value,
+                    officeLat: parseFloat(document.getElementById('office-lat').value) || 35.6892,
+                    officeLng: parseFloat(document.getElementById('office-lng').value) || 51.3890
+                };
+
+                this.saveSettingsToStorage();
+                this.showNotification('تنظیمات با موفقیت ذخیره شد', 'success');
+            }
+
+            // ابزارهای کمکی
+            viewImage(imageSrc) {
+                document.getElementById('full-size-image').src = imageSrc;
+                document.getElementById('image-viewer-modal').classList.add('active');
+            }
+
+            downloadImage(imageSrc, filename) {
+                const link = document.createElement('a');
+                link.href = imageSrc;
+                link.download = filename;
+                link.click();
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'exclamation-triangle' : 'info'}"></i>
+                    ${message}
+                `;
+                
+                const container = document.getElementById('notification-container');
+                container.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+
+            getPersianDayOfWeek(day) {
+                const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+                return days[day];
+            }
+
+            // متدهای ذخیره‌سازی
+            saveEmployees() {
+                localStorage.setItem('employees', JSON.stringify(this.employees));
+            }
+
+            saveTasks() {
+                localStorage.setItem('tasks', JSON.stringify(this.tasks));
+            }
+
+            saveRequests() {
+                localStorage.setItem('requests', JSON.stringify(this.requests));
+            }
+
+            saveAttendance() {
+                localStorage.setItem('attendance', JSON.stringify(this.attendance));
+            }
+
+            saveDutySchedule() {
+                localStorage.setItem('dutySchedule', JSON.stringify(this.dutySchedule));
+            }
+
+            saveSettingsToStorage() {
+                localStorage.setItem('settings', JSON.stringify(this.settings));
+            }
+        }
+
+        // مقداردهی اولیه سیستم
+        document.addEventListener('DOMContentLoaded', function() {
+            window.ems = new EmployeeManagementSystem();
+        });
+    </script>
+</body>
+</html>
