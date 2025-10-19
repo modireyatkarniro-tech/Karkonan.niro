@@ -3747,6 +3747,7 @@
                 } catch (error) {
                     console.error('خطا در ایجاد جدول کشیک:', error);
                     this.showNotification('خطا در ایجاد جدول کشیک', 'error');
+                    throw error;
                 }
             }
 
