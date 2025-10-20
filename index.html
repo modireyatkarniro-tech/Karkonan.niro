@@ -9,1112 +9,1108 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.css">
     <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
     <style>
-        /* تمام استایل‌های قبلی کاملاً حفظ شده */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .employee-theme {
-            --primary-color: #10b981;
-            --secondary-color: #059669;
-            --sidebar-bg: #065f46;
-            --header-bg: #10b981;
-        }
-
-        .admin-theme {
-            --primary-color: #3b82f6;
-            --secondary-color: #1d4ed8;
-            --sidebar-bg: #1e3a8a;
-            --header-bg: #3b82f6;
-        }
-
-        .auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .auth-card {
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 400px;
-            max-width: 90%;
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .auth-header h2 {
-            color: #333;
-            margin-bottom: 0.5rem;
-        }
-
-        .auth-header p {
-            color: #666;
-        }
-
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #e5e7eb;
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 4px;
-        }
-
-        .auth-tab {
-            flex: 1;
-            padding: 0.75rem;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .auth-tab.active {
-            background: var(--primary-color, #3b82f6);
-            color: white;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #374151;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-            background: #fff;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-color, #3b82f6);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
-
-        .btn-block {
-            width: 100%;
-        }
-
-        .btn-lg {
-            padding: 1rem 2rem;
-            font-size: 1.1rem;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-        }
-
-        .btn-primary {
-            background: var(--primary-color, #3b82f6);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--secondary-color, #1d4ed8);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-success {
-            background: #10b981;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-info {
-            background: #06b6d4;
-            color: white;
-        }
-
-        .btn-info:hover {
-            background: #0891b2;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
-        }
-
-        .btn-warning {
-            background: #f59e0b;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #d97706;
-            transform: translateY(-2px);
-        }
-
-        .btn-glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #374151;
-        }
-
-        .btn-glass:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: var(--sidebar-bg);
-            color: white;
-            padding: 0;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-        }
-
-        .sidebar-header {
-            padding: 2rem 1.5rem 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.1);
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .version {
-            font-size: 0.875rem;
-            opacity: 0.8;
-            background: rgba(255,255,255,0.1);
-            padding: 0.25rem 0.5rem;
-            border-radius: 12px;
-            display: inline-block;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 1rem 0;
-        }
-
-        .sidebar-menu li {
-            margin: 0.25rem 0;
-        }
-
-        .sidebar-menu a {
-            color: white;
-            text-decoration: none;
-            padding: 0.75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.3s ease;
-            border-right: 3px solid transparent;
-        }
-
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background: rgba(255,255,255,0.1);
-            border-right-color: var(--primary-color);
-        }
-
-        .sidebar-menu i {
-            width: 20px;
-            text-align: center;
-        }
-
-        .menu-text {
-            flex: 1;
-        }
-
-        .main-content {
-            flex: 1;
-            background: #f8fafc;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            background: var(--header-bg);
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-
-        .user-details {
-            text-align: right;
-        }
-
-        .user-details div:first-child {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .user-role {
-            font-size: 0.875rem;
-            opacity: 0.9;
-            background: rgba(255,255,255,0.2);
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            display: inline-block;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .theme-toggle, .logout-btn {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .theme-toggle:hover, .logout-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-
-        .tab-content {
-            padding: 2rem;
-            display: none;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 1.5rem;
-            border: 1px solid #e5e7eb;
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fafafa;
-        }
-
-        .card-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-            margin: 0;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            border-left: 4px solid var(--primary-color);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .employee-stat-card {
-            border-left-color: #10b981;
-        }
-
-        .admin-stat-card {
-            border-left-color: #3b82f6;
-        }
-
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--primary-color);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1rem;
-            color: white;
-            font-size: 1.25rem;
-        }
-
-        .employee-stat-card .stat-icon {
-            background: #10b981;
-        }
-
-        .admin-stat-card .stat-icon {
-            background: #3b82f6;
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-desc {
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: right;
-            border-bottom: 1px solid #e5e7eb;
-            white-space: nowrap;
-        }
-
-        th {
-            background: #f8fafc;
-            font-weight: 600;
-            color: #374151;
-            font-size: 0.875rem;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        tbody tr {
-            transition: background 0.2s ease;
-        }
-
-        tbody tr:hover {
-            background: #f8fafc;
-        }
-
-        .status-badge {
-            padding: 0.375rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            display: inline-block;
-        }
-
-        .status-badge.completed {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-badge.pending {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-badge.approved {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-badge.rejected {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .tabs {
-            display: flex;
-            background: #f8fafc;
-            border-radius: 8px;
-            padding: 4px;
-            margin-bottom: 1.5rem;
-            border: 1px solid #e5e7eb;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            color: #6b7280;
-        }
-
-        .tab.active {
-            background: white;
-            color: var(--primary-color);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            max-width: 400px;
-        }
-
-        .notification {
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            margin-bottom: 0.75rem;
-            border-right: 4px solid #3b82f6;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .notification.success {
-            border-right-color: #10b981;
-        }
-
-        .notification.error {
-            border-right-color: #ef4444;
-        }
-
-        .notification.info {
-            border-right-color: #06b6d4;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 1rem;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 700px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-            animation: modalAppear 0.3s ease;
-        }
-
-        @keyframes modalAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.9) translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .modal-header {
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fafafa;
-            border-radius: 15px 15px 0 0;
-        }
-
-        .modal-header h3 {
-            margin: 0;
-            color: #1f2937;
-            font-size: 1.25rem;
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .modal-footer {
-            padding: 1.5rem 2rem;
-            border-top: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            background: #fafafa;
-            border-radius: 0 0 15px 15px;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-            transition: color 0.3s ease;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .close-modal:hover {
-            color: #374151;
-            background: #f3f4f6;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        select.form-control {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-            background-position: left 1rem center;
-            background-repeat: no-repeat;
-            background-size: 1rem;
-            padding-left: 3rem;
-        }
-
-        .image-upload-container {
-            border: 2px dashed #d1d5db;
-            border-radius: 8px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: #fafafa;
-        }
-
-        .image-upload-container:hover {
-            border-color: var(--primary-color);
-            background: #f8fafc;
-        }
-
-        .image-upload-container i {
-            font-size: 2rem;
-            color: #9ca3af;
-            margin-bottom: 1rem;
-        }
-
-        .image-upload-container p {
-            color: #6b7280;
-            margin-bottom: 1rem;
-        }
-
-        .image-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-top: 1rem;
-        }
-
-        .image-preview img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid #e5e7eb;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .image-preview img:hover {
-            transform: scale(1.05);
-        }
-
-        .attendance-alert {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            text-align: center;
-            z-index: 1001;
-            animation: alertAppear 0.5s ease;
-            border: 4px solid;
-            min-width: 300px;
-        }
-
-        @keyframes alertAppear {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -60%) scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-        }
-
-        .attendance-success {
-            border-color: #10b981;
-        }
-
-        .attendance-error {
-            border-color: #ef4444;
-        }
-
-        .attendance-alert h3 {
-            margin-bottom: 1rem;
-            color: #1f2937;
-            font-size: 1.5rem;
-        }
-
-        .attendance-alert p {
-            color: #6b7280;
-            font-size: 1.1rem;
-        }
-
-        .attendance-controls {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin: 2rem 0;
-        }
-
-        #map, #admin-map {
-            height: 400px;
-            border-radius: 10px;
-            margin: 1rem 0;
-            border: 1px solid #e5e7eb;
-        }
-
-        .report-controls {
-            background: #f8fafc;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            border: 1px solid #e5e7eb;
-        }
-
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .settings-group {
-            background: #f8fafc;
-            padding: 1.5rem;
-            border-radius: 10px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .settings-group h4 {
-            margin-bottom: 1rem;
-            color: #374151;
-            font-size: 1.1rem;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .gallery-item {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-        }
-
-        .gallery-item img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .gallery-item:hover img {
-            transform: scale(1.05);
-        }
-
-        .gallery-actions {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            display: flex;
-            gap: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .gallery-item:hover .gallery-actions {
-            opacity: 1;
-        }
-
-        .gallery-btn {
-            background: rgba(0,0,0,0.7);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-        }
-
-        .image-modal {
-            background: rgba(0,0,0,0.9);
-        }
-
-        .image-modal-content {
-            max-width: 90vw;
-            max-height: 90vh;
-            background: transparent;
-            box-shadow: none;
-        }
-
-        .image-modal-body {
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .image-modal-body img {
-            max-width: 100%;
-            max-height: 80vh;
-            object-fit: contain;
-        }
-
-        .test-info {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-        }
-
-        .test-info strong {
-            color: #0369a1;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                height: auto;
-            }
-            
-            .header {
-                padding: 1rem;
-            }
-            
-            .tab-content {
-                padding: 1rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .form-row {
-                flex-direction: column;
-                gap: 0;
-            }
-            
-            .attendance-controls {
-                flex-direction: column;
-            }
-            
-            .modal-content {
-                margin: 1rem;
-                width: calc(100% - 2rem);
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        .datepicker-input {
-            cursor: pointer;
-        }
-
-        .hourly-time-group {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .hourly-time-group .form-group {
-            flex: 1;
-        }
-
-        .print-btn {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .print-btn:hover {
-            background: #7c3aed;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-
-        .duty-employee-select {
-            margin-bottom: 1rem;
-        }
-
-        .duty-employee-select select {
-            margin-left: 0.5rem;
-        }
-
-        .team-members-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .team-members-list .badge {
-            background: #e5e7eb;
-            padding: 0.25rem 0.75rem;
-            border-radius: 15px;
-            font-size: 0.875rem;
-            color: #374151;
-        }
-
-        .duty-edit-controls {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-
-        .duty-cell {
-            position: relative;
-        }
-
-        .duty-cell select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 4px;
-            background: white;
-        }
-
-        .monthly-duty-grid {
-            margin-top: 1rem;
-        }
-
-        .duty-select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 4px;
-            background: white;
-            font-size: 0.875rem;
-        }
-
-        .duty-summary {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .duty-summary h4 {
-            color: #0369a1;
-            margin-bottom: 0.5rem;
-        }
-
-        .duty-help {
-            background: #fefce8;
-            border: 1px solid #fef08a;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.875rem;
-        }
-
-        .duty-help h4 {
-            color: #ca8a04;
-            margin-bottom: 0.5rem;
-        }
-    </style>
+/* تمام استایل‌های قبلی کاملاً حفظ شده */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f5f5;
+  color: #333;
+  line-height: 1.6;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.employee-theme {
+  --primary-color: #10b981;
+  --secondary-color: #059669;
+  --sidebar-bg: #065f46;
+  --header-bg: #10b981;
+}
+
+.admin-theme {
+  --primary-color: #3b82f6;
+  --secondary-color: #1d4ed8;
+  --sidebar-bg: #1e3a8a;
+  --header-bg: #3b82f6;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  max-width: 90%;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header h2 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: #666;
+}
+
+.auth-tabs {
+  display: flex;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.auth-tab.active {
+  background: var(--primary-color, #3b82f6);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  background: #fff;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--primary-color, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+.btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-primary {
+  background: var(--primary-color, #3b82f6);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--secondary-color, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+
+.btn-success:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-info {
+  background: #06b6d4;
+  color: white;
+}
+
+.btn-info:hover {
+  background: #0891b2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.btn-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-warning:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #374151;
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 280px;
+  background: var(--sidebar-bg);
+  color: white;
+  padding: 0;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header {
+  padding: 2rem 1.5rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-header h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.version {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 1rem 0;
+}
+
+.sidebar-menu li {
+  margin: 0.25rem 0;
+}
+
+.sidebar-menu a {
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  border-right: 3px solid transparent;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+  background: rgba(255, 255, 255, 0.1);
+  border-right-color: var(--primary-color);
+}
+
+.sidebar-menu i {
+  width: 20px;
+  text-align: center;
+}
+
+.menu-text {
+  flex: 1;
+}
+
+.main-content {
+  flex: 1;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: var(--header-bg);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-details {
+  text-align: right;
+}
+
+.user-details div:first-child {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.user-role {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  display: inline-block;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.theme-toggle, .logout-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle:hover, .logout-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.tab-content {
+  padding: 2rem;
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid var(--primary-color);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.employee-stat-card {
+  border-left-color: #10b981;
+}
+
+.admin-stat-card {
+  border-left-color: #3b82f6;
+}
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  background: var(--primary-color);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.employee-stat-card .stat-icon {
+  background: #10b981;
+}
+
+.admin-stat-card .stat-icon {
+  background: #3b82f6;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.stat-desc {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 1rem;
+  text-align: right;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+tbody tr {
+  transition: background 0.2s ease;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+.status-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-badge.completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.rejected {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.tabs {
+  display: flex;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.tab.active {
+  background: white;
+  color: var(--primary-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notification-container {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  max-width: 400px;
+}
+
+.notification {
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  margin-bottom: 0.75rem;
+  border-right: 4px solid #3b82f6;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.notification.success {
+  border-right-color: #10b981;
+}
+
+.notification.error {
+  border-right-color: #ef4444;
+}
+
+.notification.info {
+  border-right-color: #06b6d4;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+.modal.active {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  animation: modalAppear 0.3s ease;
+}
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.modal-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fafafa;
+  border-radius: 15px 15px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.25rem;
+}
+
+.modal-body {
+  padding: 2rem;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  background: #fafafa;
+  border-radius: 0 0 15px 15px;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.3s ease;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-modal:hover {
+  color: #374151;
+  background: #f3f4f6;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: left 1rem center;
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  padding-left: 3rem;
+}
+
+.image-upload-container {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.image-upload-container:hover {
+  border-color: var(--primary-color);
+  background: #f8fafc;
+}
+
+.image-upload-container i {
+  font-size: 2rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.image-upload-container p {
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.image-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.image-preview img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.image-preview img:hover {
+  transform: scale(1.05);
+}
+
+.attendance-alert {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  z-index: 1001;
+  animation: alertAppear 0.5s ease;
+  border: 4px solid;
+  min-width: 300px;
+}
+
+@keyframes alertAppear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+.attendance-success {
+  border-color: #10b981;
+}
+
+.attendance-error {
+  border-color: #ef4444;
+}
+
+.attendance-alert h3 {
+  margin-bottom: 1rem;
+  color: #1f2937;
+  font-size: 1.5rem;
+}
+
+.attendance-alert p {
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.attendance-controls {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+#map, #admin-map {
+  height: 400px;
+  border-radius: 10px;
+  margin: 1rem 0;
+  border: 1px solid #e5e7eb;
+}
+
+.report-controls {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.settings-group {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.settings-group h4 {
+  margin-bottom: 1rem;
+  color: #374151;
+  font-size: 1.1rem;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+}
+
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.gallery-actions {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .gallery-actions {
+  opacity: 1;
+}
+
+.gallery-btn {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+}
+
+.image-modal {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.image-modal-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  background: transparent;
+  box-shadow: none;
+}
+
+.image-modal-body {
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-modal-body img {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+.test-info {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+}
+
+.test-info strong {
+  color: #0369a1;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+  }
+
+  .header {
+    padding: 1rem;
+  }
+
+  .tab-content {
+    padding: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .attendance-controls {
+    flex-direction: column;
+  }
+
+  .modal-content {
+    margin: 1rem;
+    width: calc(100% - 2rem);
+  }
+}
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.datepicker-input {
+  cursor: pointer;
+}
+
+.hourly-time-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.hourly-time-group .form-group {
+  flex: 1;
+}
+
+.print-btn {
+  background: #8b5cf6;
+  color: white;
+}
+
+.print-btn:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.duty-employee-select {
+  margin-bottom: 1rem;
+}
+
+.duty-employee-select select {
+  margin-left: 0.5rem;
+}
+
+.team-members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.team-members-list .badge {
+  background: #e5e7eb;
+  padding: 0.25rem 0.75rem;
+  border-radius: 15px;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.duty-edit-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.duty-cell {
+  position: relative;
+}
+
+.duty-cell select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: white;
+}
+
+.monthly-duty-grid {
+  margin-top: 1rem;
+}
+
+.duty-select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  background: white;
+  font-size: 0.875rem;
+}
+
+.duty-summary {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.duty-summary h4 {
+  color: #0369a1;
+  margin-bottom: 0.5rem;
+}
+
+.duty-help {
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.duty-help h4 {
+  color: #ca8a04;
+  margin-bottom: 0.5rem;
+}
+</style>
 </head>
 <body>
     <div class="notification-container" id="notification-container"></div>
@@ -1959,9 +1955,8 @@
     <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
-    
-    <script>
-        class EmployeeManagementSystem {
+    </script>
+class EmployeeManagementSystem {
             constructor() {
                 this.currentUser = null;
                 this.employees = JSON.parse(localStorage.getItem('employees')) || [];
@@ -2533,12 +2528,170 @@
                     alert.remove();
                 }, 5000);
             }
-
-            getPersianDayOfWeek(day) {
-                const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
-                return days[day];
+getPersianDayOfWeek(date) {
+    const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+    
+    try {
+        // اگر تاریخ شمسی است (فرمت YYYY/MM/DD)
+        if (typeof date === 'string') {
+            const [year, month, day] = date.split('/').map(Number);
+            
+            // اعتبارسنجی تاریخ
+            if (!year || !month || !day || month < 1 || month > 12 || day < 1 || day > 31) {
+                console.warn('Invalid date format:', date);
+                return 'نامشخص';
             }
+            
+            const dayOfWeek = this.calculatePersianDayOfWeek(year, month, day);
+            
+            // اعتبارسنجی نتیجه
+            if (dayOfWeek >= 0 && dayOfWeek < days.length) {
+                return days[dayOfWeek];
+            } else {
+                console.error('Invalid day of week calculation:', dayOfWeek, 'for date:', date);
+                return 'نامشخص';
+            }
+        }
+        
+        // اگر شیء تاریخ میلادی است
+        if (date instanceof Date) {
+            return days[date.getDay()];
+        }
+        
+        // تاریخ جاری
+        return days[new Date().getDay()];
+        
+    } catch (error) {
+        console.error('Error in getPersianDayOfWeek:', error);
+        console.error('Failed date:', date);
+        return 'نامشخص';
+    }
+}
+getCurrentPersianDate() {
+    try {
+        const now = new Date();
+        
+        // الگوریتم ساده برای تبدیل تاریخ میلادی به شمسی
+        // این یک تبدیل ساده است - برای دقت بیشتر از کتابخانه استفاده کنید
+        const gYear = now.getFullYear();
+        const gMonth = now.getMonth() + 1;
+        const gDay = now.getDate();
+        
+        // تاریخ مبنا: 21 مارس 2024 = 1 فروردین 1403
+        const baseGregorian = new Date(2024, 2, 21);
+        const basePersian = { year: 1403, month: 1, day: 1 };
+        
+        // محاسبه تفاوت روزها
+        const diffTime = now - baseGregorian;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        // تبدیل به تاریخ شمسی
+        let persianDate = { ...basePersian };
+        let remainingDays = diffDays;
+        
+        while (remainingDays > 0) {
+            const daysInMonth = this.getPersianMonthDays(persianDate.year)[persianDate.month - 1];
+            if (persianDate.day + remainingDays <= daysInMonth) {
+                persianDate.day += remainingDays;
+                remainingDays = 0;
+            } else {
+                remainingDays -= (daysInMonth - persianDate.day + 1);
+                persianDate.day = 1;
+                persianDate.month++;
+                if (persianDate.month > 12) {
+                    persianDate.month = 1;
+                    persianDate.year++;
+                }
+            }
+        }
+        
+        return {
+            year: persianDate.year,
+            month: persianDate.month,
+            day: persianDate.day,
+            yearString: persianDate.year.toString(),
+            monthString: persianDate.month.toString().padStart(2, '0'),
+            dayString: persianDate.day.toString().padStart(2, '0')
+        };
+        
+    } catch (error) {
+        console.error('Error in getCurrentPersianDate:', error);
+        // Fallback: تاریخ ثابت
+        return {
+            year: 1404,
+            month: 7,
+            day: 28,
+            yearString: "1404",
+            monthString: "07",
+            dayString: "28"
+        };
+    }
+}
 
+getPersianMonthName(month) {
+    const monthNames = [
+        'فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور',
+        'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'
+    ];
+    return monthNames[month - 1] || 'نامشخص';
+}
+calculatePersianDayOfWeek(year, month, day) {
+    // تاریخ مبنا: ۱ مهر ۱۴۰۴ = سه‌شنبه (2)
+    const baseYear = 1404;
+    const baseMonth = 7; // مهرماه
+    const baseDay = 1;
+    const baseDayOfWeek = 2; // سه‌شنبه = 2
+    
+    // محاسبه روزهای گذشته از تاریخ مبنا
+    let totalDays = 0;
+    
+    // اگر تاریخ قبل از مهر ۱۴۰۴ باشد
+    if (year < baseYear || (year === baseYear && month < baseMonth)) {
+        // محاسبه معکوس
+        for (let y = year; y < baseYear; y++) {
+            totalDays -= this.isPersianLeapYear(y) ? 366 : 365;
+        }
+        for (let m = month; m < baseMonth; m++) {
+            totalDays -= this.getPersianMonthDays(year)[m - 1];
+        }
+        totalDays -= (day - baseDay);
+    } else {
+        // محاسبه عادی برای تاریخ‌های بعد از مهر ۱۴۰۴
+        // روزهای سال‌های کامل از سال پایه تا سال قبل از سال جاری
+        for (let y = baseYear; y < year; y++) {
+            totalDays += this.isPersianLeapYear(y) ? 366 : 365;
+        }
+        
+        // روزهای ماه‌های سال جاری (تا قبل از ماه جاری)
+        const monthDays = this.getPersianMonthDays(year);
+        for (let m = baseMonth; m < month; m++) {
+            totalDays += monthDays[m - 1];
+        }
+        
+        // روزهای ماه جاری (تا قبل از روز جاری)
+        totalDays += (day - baseDay);
+    }
+    
+    // محاسبه روز هفته (0 = یکشنبه, 1 = دوشنبه, ..., 6 = شنبه)
+    const dayOfWeek = (baseDayOfWeek + totalDays) % 7;
+    
+    // اطمینان از مثبت بودن نتیجه
+    const finalDayOfWeek = (dayOfWeek + 7) % 7;
+    
+    console.log(`📅 Date: ${year}/${month}/${day} | Total days: ${totalDays} | Day of week: ${finalDayOfWeek}`);
+    
+    return finalDayOfWeek;
+}
+getPersianMonthDays(year) {
+    // روزهای هر ماه در سال شمسی (اسفند در سال کبیسه 30 روزه است)
+    const isLeap = this.isPersianLeapYear(year);
+    return [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isLeap ? 30 : 29];
+}
+isPersianLeapYear(year) {
+    // سال کبیسه شمسی: باقیمانده تقسیم بر 33 باید 1, 5, 9, 13, 17, 22, 26, یا 30 باشد
+    const leapRemainders = [1, 5, 9, 13, 17, 22, 26, 30];
+    return leapRemainders.includes(year % 33);
+}
             switchEmployeeTab(tabName) {
                 document.querySelectorAll('#employee-portal .tab-content').forEach(tab => {
                     tab.classList.remove('active');
@@ -3644,153 +3797,172 @@
                     activeEmployeesList.appendChild(badge);
                 });
             }
+createMonthlyDutyTable() {
+    try {
+        console.log('=== ایجاد جدول کشیک ===');
+        
+        const tbody = document.querySelector('#admin-duty-table tbody');
+        if (!tbody) {
+            throw new Error('بدنه جدول پیدا نشد!');
+        }
+        
+        tbody.innerHTML = '';
 
-            createMonthlyDutyTable() {
-                try {
-                    console.log('=== ایجاد جدول کشیک ماهانه ===');
-                    
-                    const tbody = document.querySelector('#admin-duty-table tbody');
-                    if (!tbody) {
-                        console.error('بدنه جدول پیدا نشد!');
-                        return;
-                    }
-                    
-                    tbody.innerHTML = '';
+        // دریافت تاریخ شمسی جاری به صورت خودکار
+        const currentPersian = this.getCurrentPersianDate();
+        const currentYear = currentPersian.year;
+        const currentMonth = currentPersian.month;
+        
+        console.log(`📅 تاریخ جاری: ${currentYear}/${currentMonth}/${currentPersian.day}`);
 
-                    const now = new persianDate();
-                    const currentMonth = now.month();
-                    const currentYear = now.year();
-                    
-                    // ایجاد اولین روز ماه
-                    const firstDay = new persianDate();
-                    firstDay.year(currentYear);
-                    firstDay.month(currentMonth);
-                    firstDay.date(1);
-                    
-                    const daysInMonth = firstDay.daysInMonth();
-                    console.log(`تعداد روزهای ماه: ${daysInMonth}`);
+        // محاسبه تعداد روزهای ماه جاری
+        const daysInMonth = this.getPersianMonthDays(currentYear)[currentMonth - 1];
+        const monthName = this.getPersianMonthName(currentMonth);
+        
+        console.log(`ایجاد جدول برای ماه ${monthName} ${currentYear} - ${daysInMonth} روز`);
 
-                    const activeEmployees = this.employees.filter(emp => 
-                        emp.status === 'active' && !emp.role
-                    );
+        const activeEmployees = this.employees.filter(emp => 
+            emp.status === 'active' && !emp.role
+        );
 
-                    console.log(`کارمندان فعال: ${activeEmployees.length}`, activeEmployees);
+        if (activeEmployees.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; color: #6b7280;">
+                        هیچ کارمند فعالی برای اختصاص کشیک وجود ندارد
+                    </td>
+                </tr>
+            `;
+            return;
+        }
 
-                    for (let day = 1; day <= daysInMonth; day++) {
-                        const date = new persianDate();
-                        date.year(currentYear);
-                        date.month(currentMonth);
-                        date.date(day);
-                        
-                        const dateStr = date.format('YYYY/MM/DD');
-                        const dayOfWeek = this.getPersianDayOfWeek(date.weekday());
-                        
-                        // پیدا کردن کشیک موجود برای این تاریخ
-                        const existingDuty = this.dutySchedule.find(duty => duty.date === dateStr);
-
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${dateStr}</td>
-                            <td>${dayOfWeek}</td>
-                            <td class="duty-cell">
-                                <select class="duty-select" data-date="${dateStr}" data-type="dayDuty">
-                                    <option value="">انتخاب کارمند</option>
-                                    ${activeEmployees.map(emp => 
-                                        `<option value="${emp.code}" ${existingDuty?.dayDuty === emp.code ? 'selected' : ''}>
-                                            ${emp.name}
-                                        </option>`
-                                    ).join('')}
-                                </select>
-                            </td>
-                            <td class="duty-cell">
-                                <select class="duty-select" data-date="${dateStr}" data-type="nightDuty">
-                                    <option value="">انتخاب کارمند</option>
-                                    ${activeEmployees.map(emp => 
-                                        `<option value="${emp.code}" ${existingDuty?.nightDuty === emp.code ? 'selected' : ''}>
-                                            ${emp.name}
-                                        </option>`
-                                    ).join('')}
-                                </select>
-                            </td>
-                            <td class="duty-cell">
-                                <select class="duty-select" data-date="${dateStr}" data-type="assistantDuty">
-                                    <option value="">انتخاب کارمند</option>
-                                    ${activeEmployees.map(emp => 
-                                        `<option value="${emp.code}" ${existingDuty?.assistantDuty === emp.code ? 'selected' : ''}>
-                                            ${emp.name}
-                                        </option>`
-                                    ).join('')}
-                                </select>
-                            </td>
-                            <td class="duty-cell">
-                                <select class="duty-select" data-date="${dateStr}" data-type="oncallDuty">
-                                    <option value="">انتخاب کارمند</option>
-                                    ${activeEmployees.map(emp => 
-                                        `<option value="${emp.code}" ${existingDuty?.oncallDuty === emp.code ? 'selected' : ''}>
-                                            ${emp.name}
-                                        </option>`
-                                    ).join('')}
-                                </select>
-                            </td>
-                            <td>
-                                <button class="btn btn-sm btn-warning" onclick="ems.clearDutyRow('${dateStr}')">
-                                    <i class="fas fa-undo"></i> پاک کردن
-                                </button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    }
-
-                    console.log('جدول کشیک با موفقیت ایجاد شد');
-                    this.updateDutySummary();
-                    
-                } catch (error) {
-                    console.error('خطا در ایجاد جدول کشیک:', error);
-                    this.showNotification('خطا در ایجاد جدول کشیک', 'error');
-                    throw error;
-                }
+        // ایجاد جدول برای تمام روزهای ماه
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dateStr = `${currentYear}/${currentMonth.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`;
+            const dayOfWeek = this.getPersianDayOfWeek(dateStr);
+            
+            // فقط برای ۵ روز اول و آخر لاگ نمایش بده
+            if (day <= 3 || day >= daysInMonth - 2) {
+                console.log(`روز ${day}: ${dateStr} - ${dayOfWeek}`);
             }
+            
+            const existingDuty = this.dutySchedule.find(duty => duty.date === dateStr);
 
-            handleDutyChange(selectElement) {
-                const date = selectElement.dataset.date;
-                const type = selectElement.dataset.type;
-                const employeeCode = selectElement.value;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${dateStr}</td>
+                <td>${dayOfWeek}</td>
+                <td class="duty-cell">
+                    <select class="duty-select" data-date="${dateStr}" data-type="dayDuty">
+                        <option value="">انتخاب کارمند</option>
+                        ${activeEmployees.map(emp => 
+                            `<option value="${emp.code}" ${existingDuty?.dayDuty === emp.code ? 'selected' : ''}>
+                                ${emp.name}
+                            </option>`
+                        ).join('')}
+                    </select>
+                </td>
+                <td class="duty-cell">
+                    <select class="duty-select" data-date="${dateStr}" data-type="nightDuty">
+                        <option value="">انتخاب کارمند</option>
+                        ${activeEmployees.map(emp => 
+                            `<option value="${emp.code}" ${existingDuty?.nightDuty === emp.code ? 'selected' : ''}>
+                                ${emp.name}
+                            </option>`
+                        ).join('')}
+                    </select>
+                </td>
+                <td class="duty-cell">
+                    <select class="duty-select" data-date="${dateStr}" data-type="assistantDuty">
+                        <option value="">انتخاب کارمند</option>
+                        ${activeEmployees.map(emp => 
+                            `<option value="${emp.code}" ${existingDuty?.assistantDuty === emp.code ? 'selected' : ''}>
+                                ${emp.name}
+                            </option>`
+                        ).join('')}
+                    </select>
+                </td>
+                <td class="duty-cell">
+                    <select class="duty-select" data-date="${dateStr}" data-type="oncallDuty">
+                        <option value="">انتخاب کارمند</option>
+                        ${activeEmployees.map(emp => 
+                            `<option value="${emp.code}" ${existingDuty?.oncallDuty === emp.code ? 'selected' : ''}>
+                                ${emp.name}
+                            </option>`
+                        ).join('')}
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-warning" onclick="ems.clearDutyRow('${dateStr}')">
+                        <i class="fas fa-undo"></i> پاک کردن
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
 
-                if (!employeeCode) {
-                    // اگر مقدار خالی باشد، کشیک را پاک کن
-                    this.clearDutyAssignment(date, type);
-                    return;
-                }
+        console.log(`✅ جدول کشیک ماه ${monthName} ${currentYear} با ${daysInMonth} روز ایجاد شد`);
+        this.showNotification(`جدول کشیک ماه ${monthName} ${currentYear} با ${daysInMonth} روز ایجاد شد`, 'success');
+        this.updateDutySummary();
+        
+    } catch (error) {
+        console.error('خطا در ایجاد جدول کشیک:', error);
+        this.showNotification('خطا در ایجاد جدول کشیک: ' + error.message, 'error');
+    }
+}
+ handleDutyChange(selectElement) {
+    try {
+        const date = selectElement.dataset.date;
+        const type = selectElement.dataset.type;
+        const employeeCode = selectElement.value;
 
-                // پیدا کردن یا ایجاد کشیک برای این تاریخ
-                let duty = this.dutySchedule.find(d => d.date === date);
-                
-                if (!duty) {
-                    const persianDateObj = new persianDate(date);
-                    duty = {
-                        id: Date.now().toString(),
-                        date: date,
-                        dayOfWeek: this.getPersianDayOfWeek(persianDateObj.weekday()),
-                        dayDuty: '',
-                        nightDuty: '',
-                        assistantDuty: '',
-                        oncallDuty: ''
-                    };
-                    this.dutySchedule.push(duty);
-                }
+        if (!employeeCode) {
+            this.clearDutyAssignment(date, type);
+            return;
+        }
 
-                // آپدیت مقدار
-                duty[type] = employeeCode;
+        // پیدا کردن یا ایجاد کشیک برای این تاریخ
+        let duty = this.dutySchedule.find(d => d.date === date);
+        
+        if (!duty) {
+            // 🔽 تغییر این خط - مستقیماً از date string استفاده کن 🔽
+            const dayOfWeek = this.getPersianDayOfWeek(date);
+            
+            console.log('Creating new duty for:', date, 'Day of week:', dayOfWeek);
+            
+            duty = {
+                id: Date.now().toString(),
+                date: date,
+                dayOfWeek: dayOfWeek,
+                dayDuty: '',
+                nightDuty: '',
+                assistantDuty: '',
+                oncallDuty: ''
+            };
+            this.dutySchedule.push(duty);
+        }
 
-                this.saveDutySchedule();
-                
-                // نمایش پیام برای کاربر
-                const employee = this.employees.find(emp => emp.code === employeeCode);
-                this.showNotification(`${employee.name} به عنوان ${this.getDutyTypeText(type)} انتخاب شد`, 'info');
-                
-                this.updateDutySummary();
-            }
+        // آپدیت مقدار
+        duty[type] = employeeCode;
 
+        // 🔽 این خط را هم اضافه کن - برای به روزرسانی dayOfWeek در کشیک‌های موجود 🔽
+        duty.dayOfWeek = this.getPersianDayOfWeek(date);
+
+        this.saveDutySchedule();
+        
+        // نمایش پیام برای کاربر
+        const employee = this.employees.find(emp => emp.code === employeeCode);
+        if (employee) {
+            this.showNotification(`${employee.name} به عنوان ${this.getDutyTypeText(type)} انتخاب شد`, 'info');
+        }
+        
+        this.updateDutySummary();
+        
+    } catch (error) {
+        console.error('خطا در تغییر کشیک:', error);
+        this.showNotification('خطا در ثبت کشیک', 'error');
+    }
+}
             clearDutyAssignment(date, type) {
                 const duty = this.dutySchedule.find(d => d.date === date);
                 if (duty) {
@@ -3949,188 +4121,193 @@
                 this.showNotification(`کشیک برای ${Object.keys(employeeDuties).length} کارمند تنظیم شد`, 'info');
             }
 
-            printDutySchedule() {
-                const assignedDuties = this.dutySchedule.filter(duty => 
-                    duty.dayDuty || duty.nightDuty || duty.assistantDuty || duty.oncallDuty
-                );
+printDutySchedule() {
+    const assignedDuties = this.dutySchedule.filter(duty => 
+        duty.dayDuty || duty.nightDuty || duty.assistantDuty || duty.oncallDuty
+    );
 
-                if (assignedDuties.length === 0) {
-                    this.showNotification('هیچ کشیکی برای پرینت وجود ندارد', 'warning');
-                    return;
+    if (assignedDuties.length === 0) {
+        this.showNotification('هیچ کشیکی برای پرینت وجود ندارد', 'warning');
+        return;
+    }
+
+    // ایجاد پنجره جدید برای پرینت
+    const printWindow = window.open('', '_blank');
+    const monthName = new persianDate().format('MMMM');
+    const currentYear = new persianDate().year();
+    
+    printWindow.document.write(`
+        <html dir="rtl">
+        <head>
+            <title>لیست کشیک ${monthName} ${currentYear}</title>
+            <meta charset="UTF-8">
+            <style>
+                body { 
+                    font-family: Tahoma, Arial, sans-serif; 
+                    margin: 20px; 
+                    line-height: 1.6;
+                    color: #333;
                 }
-
-                // ایجاد پنجره جدید برای پرینت
-                const printWindow = window.open('', '_blank');
-                const monthName = new persianDate().format('MMMM');
-                const currentYear = new persianDate().year();
-                
-                printWindow.document.write(`
-                    <html dir="rtl">
-                    <head>
-                        <title>لیست کشیک ${monthName} ${currentYear}</title>
-                        <meta charset="UTF-8">
-                        <style>
-                            body { 
-                                font-family: Tahoma, Arial, sans-serif; 
-                                margin: 20px; 
-                                line-height: 1.6;
-                                color: #333;
-                            }
-                            .header { 
-                                text-align: center; 
-                                margin-bottom: 30px;
-                                border-bottom: 2px solid #333;
-                                padding-bottom: 10px;
-                            }
-                            .header h1 { 
-                                color: #2c5aa0; 
-                                margin: 0;
-                                font-size: 24px;
-                            }
-                            .header .subtitle {
-                                color: #666;
-                                font-size: 16px;
-                                margin-top: 5px;
-                            }
-                            table { 
-                                width: 100%; 
-                                border-collapse: collapse; 
-                                margin: 20px 0;
-                                font-size: 12px;
-                            }
-                            th, td { 
-                                border: 1px solid #000; 
-                                padding: 8px; 
-                                text-align: center; 
-                            }
-                            th { 
-                                background-color: #f0f0f0; 
-                                font-weight: bold;
-                                color: #333;
-                            }
-                            tr:nth-child(even) {
-                                background-color: #f9f9f9;
-                            }
-                            .summary {
-                                margin-top: 30px;
-                                padding: 15px;
-                                background-color: #f0f8ff;
-                                border: 1px solid #bae6fd;
-                                border-radius: 5px;
-                            }
-                            .summary h3 {
-                                color: #0369a1;
-                                margin-top: 0;
-                            }
-                            .footer {
-                                margin-top: 30px;
-                                text-align: left;
-                                font-size: 11px;
-                                color: #666;
-                            }
-                            @media print {
-                                body { margin: 0; }
-                                .no-print { display: none; }
-                                table { font-size: 10px; }
-                                th, td { padding: 6px; }
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="header">
-                            <h1>لیست کشیک ماه ${monthName} ${currentYear}</h1>
-                            <div class="subtitle">سیستم مدیریت کارکنان - نسخه ۵.۲</div>
-                        </div>
+                .header { 
+                    text-align: center; 
+                    margin-bottom: 30px;
+                    border-bottom: 2px solid #333;
+                    padding-bottom: 10px;
+                }
+                .header h1 { 
+                    color: #2c5aa0; 
+                    margin: 0;
+                    font-size: 24px;
+                }
+                .header .subtitle {
+                    color: #666;
+                    font-size: 16px;
+                    margin-top: 5px;
+                }
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    margin: 20px 0;
+                    font-size: 12px;
+                }
+                th, td { 
+                    border: 1px solid #000; 
+                    padding: 8px; 
+                    text-align: center; 
+                }
+                th { 
+                    background-color: #f0f0f0; 
+                    font-weight: bold;
+                    color: #333;
+                }
+                tr:nth-child(even) {
+                    background-color: #f9f9f9;
+                }
+                .summary {
+                    margin-top: 30px;
+                    padding: 15px;
+                    background-color: #f0f8ff;
+                    border: 1px solid #bae6fd;
+                    border-radius: 5px;
+                }
+                .summary h3 {
+                    color: #0369a1;
+                    margin-top: 0;
+                }
+                .footer {
+                    margin-top: 30px;
+                    text-align: left;
+                    font-size: 11px;
+                    color: #666;
+                }
+                @media print {
+                    body { margin: 0; }
+                    .no-print { display: none; }
+                    table { font-size: 10px; }
+                    th, td { padding: 6px; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>لیست کشیک ماه ${monthName} ${currentYear}</h1>
+                <div class="subtitle">سیستم مدیریت کارکنان - نسخه ۵.۲</div>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>تاریخ</th>
+                        <th>روز</th>
+                        <th>کشیک روز</th>
+                        <th>کشیک شب</th>
+                        <th>کمک کشیک</th>
+                        <th>آنکال</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${assignedDuties.map((duty, index) => {
+                        const dayEmp = this.employees.find(e => e.code === duty.dayDuty);
+                        const nightEmp = this.employees.find(e => e.code === duty.nightDuty);
+                        const assistantEmp = this.employees.find(e => e.code === duty.assistantDuty);
+                        const oncallEmp = this.employees.find(e => e.code === duty.oncallDuty);
                         
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>ردیف</th>
-                                    <th>تاریخ</th>
-                                    <th>روز</th>
-                                    <th>کشیک روز</th>
-                                    <th>کشیک شب</th>
-                                    <th>کمک کشیک</th>
-                                    <th>آنکال</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${assignedDuties.map((duty, index) => {
-                                    const dayEmp = this.employees.find(e => e.code === duty.dayDuty);
-                                    const nightEmp = this.employees.find(e => e.code === duty.nightDuty);
-                                    const assistantEmp = this.employees.find(e => e.code === duty.assistantDuty);
-                                    const oncallEmp = this.employees.find(e => e.code === duty.oncallDuty);
-                                    
-                                    return `
-                                        <tr>
-                                            <td>${index + 1}</td>
-                                            <td>${duty.date}</td>
-                                            <td>${duty.dayOfWeek}</td>
-                                            <td>${dayEmp ? dayEmp.name : ''}</td>
-                                            <td>${nightEmp ? nightEmp.name : ''}</td>
-                                            <td>${assistantEmp ? assistantEmp.name : ''}</td>
-                                            <td>${oncallEmp ? oncallEmp.name : ''}</td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
+                        // 🔽 این خط مهم است - استفاده از تابع getPersianDayOfWeek 🔽
+                        const correctDayOfWeek = this.getPersianDayOfWeek(duty.date);
                         
-                        <div class="summary">
-                            <h3>خلاصه کشیک‌ها</h3>
-                            <p><strong>تعداد روزهای دارای کشیک:</strong> ${assignedDuties.length} روز</p>
-                            <p><strong>تاریخ پرینت:</strong> ${new persianDate().format('YYYY/MM/DD')}</p>
-                        </div>
-                        
-                        <div class="footer">
-                            <p>این سند به صورت خودکار توسط سیستم مدیریت کارکنان تولید شده است.</p>
-                        </div>
-                        
-                        <div class="no-print" style="margin-top: 20px;">
-                            <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">پرینت</button>
-                            <button onclick="window.close()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-right: 10px;">بستن</button>
-                        </div>
-                        
-                        <script>
-                            window.onload = function() {
-                                window.print();
-                            };
-                        <\/script>
-                    </body>
-                    </html>
-                `);
-                
-                printWindow.document.close();
-            }
+                        return `
+                            <tr>
+                                <td>${index + 1}</td>
+                                <td>${duty.date}</td>
+                                <td>${correctDayOfWeek}</td>
+                                <td>${dayEmp ? dayEmp.name : ''}</td>
+                                <td>${nightEmp ? nightEmp.name : ''}</td>
+                                <td>${assistantEmp ? assistantEmp.name : ''}</td>
+                                <td>${oncallEmp ? oncallEmp.name : ''}</td>
+                            </tr>
+                        `;
+                    }).join('')}
+                </tbody>
+            </table>
+            
+            <div class="summary">
+                <h3>خلاصه کشیک‌ها</h3>
+                <p><strong>تعداد روزهای دارای کشیک:</strong> ${assignedDuties.length} روز</p>
+                <p><strong>تاریخ پرینت:</strong> ${new persianDate().format('YYYY/MM/DD')}</p>
+            </div>
+            
+            <div class="footer">
+                <p>این سند به صورت خودکار توسط سیستم مدیریت کارکنان تولید شده است.</p>
+            </div>
+            
+            <div class="no-print" style="margin-top: 20px;">
+                <button onclick="window.print()" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">پرینت</button>
+                <button onclick="window.close()" style="padding: 10px 20px; font-size: 16px; cursor: pointer; margin-right: 10px;">بستن</button>
+            </div>
+            
+            <script>
+                window.onload = function() {
+                    window.print();
+                };
+            <\/script>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+}
 
-            loadAdminDuty() {
-                const tbody = document.querySelector('#admin-duty-table tbody');
-                tbody.innerHTML = '';
+loadAdminDuty() {
+    const tbody = document.querySelector('#admin-duty-table tbody');
+    tbody.innerHTML = '';
 
-                this.dutySchedule.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(duty => {
-                    const dayDutyEmployee = this.employees.find(emp => emp.code === duty.dayDuty);
-                    const nightDutyEmployee = this.employees.find(emp => emp.code === duty.nightDuty);
-                    const assistantDutyEmployee = this.employees.find(emp => emp.code === duty.assistantDuty);
-                    const oncallDutyEmployee = this.employees.find(emp => emp.code === duty.oncallDuty);
+    this.dutySchedule.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(duty => {
+        const dayDutyEmployee = this.employees.find(emp => emp.code === duty.dayDuty);
+        const nightDutyEmployee = this.employees.find(emp => emp.code === duty.nightDuty);
+        const assistantDutyEmployee = this.employees.find(emp => emp.code === duty.assistantDuty);
+        const oncallDutyEmployee = this.employees.find(emp => emp.code === duty.oncallDuty);
 
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${duty.date}</td>
-                        <td>${duty.dayOfWeek}</td>
-                        <td>${dayDutyEmployee ? dayDutyEmployee.name : '-'}</td>
-                        <td>${nightDutyEmployee ? nightDutyEmployee.name : '-'}</td>
-                        <td>${assistantDutyEmployee ? assistantDutyEmployee.name : '-'}</td>
-                        <td>${oncallDutyEmployee ? oncallDutyEmployee.name : '-'}</td>
-                        <td>
-                            <button class="btn btn-sm btn-danger" onclick="ems.deleteDutyByDate('${duty.date}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            }
+        // 🔽 استفاده از تابع getPersianDayOfWeek به جای dayOfWeek ذخیره شده 🔽
+        const correctDayOfWeek = this.getPersianDayOfWeek(duty.date);
 
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${duty.date}</td>
+            <td>${correctDayOfWeek}</td>
+            <td>${dayDutyEmployee ? dayDutyEmployee.name : '-'}</td>
+            <td>${nightDutyEmployee ? nightDutyEmployee.name : '-'}</td>
+            <td>${assistantDutyEmployee ? assistantDutyEmployee.name : '-'}</td>
+            <td>${oncallDutyEmployee ? oncallDutyEmployee.name : '-'}</td>
+            <td>
+                <button class="btn btn-sm btn-danger" onclick="ems.deleteDutyByDate('${duty.date}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
             deleteDutyByDate(date) {
                 if (confirm('آیا از حذف کشیک این تاریخ اطمینان دارید؟')) {
                     this.dutySchedule = this.dutySchedule.filter(duty => duty.date !== date);
@@ -4447,6 +4624,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             window.ems = new EmployeeManagementSystem();
         });
-    </script>
+        </script>
 </body>
 </html>
