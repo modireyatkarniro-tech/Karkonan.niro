@@ -2407,7 +2407,8 @@ class EmployeeManagementSystem {
                 try {
                     const now = new Date();
                     const persianNow = new persianDate(now);
-                    const today = persianNow.format('YYYY/MM/DD');
+                    const currentDate = this.getCurrentPersianDate();
+const today = `${currentDate.yearString}/${currentDate.monthString}/${currentDate.dayString}`;
                     const time = persianNow.format('HH:mm');
                     const dayOfWeek = this.getPersianDayOfWeek(now.getDay());
                     
@@ -2461,7 +2462,8 @@ class EmployeeManagementSystem {
 
             async handleCheckOut() {
                 try {
-                    const today = new persianDate().format('YYYY/MM/DD');
+                    const currentDate = this.getCurrentPersianDate();
+                    const today = `${currentDate.yearString}/${currentDate.monthString}/${currentDate.dayString}`;
                     const now = new Date();
                     const persianNow = new persianDate(now);
                     const time = persianNow.format('HH:mm');
@@ -2786,7 +2788,8 @@ isPersianLeapYear(year) {
             }
 
             updateEmployeeStats() {
-                const today = new persianDate().format('YYYY/MM/DD');
+                const currentDate = this.getCurrentPersianDate();
+                const today = `${currentDate.yearString}/${currentDate.monthString}/${currentDate.dayString}`;
                 
                 const todayTasks = this.tasks.filter(task => 
                     task.userId === this.currentUser.code && task.date === today
@@ -2822,7 +2825,8 @@ isPersianLeapYear(year) {
                 document.getElementById('total-employees').textContent = activeEmployees.length;
                 document.getElementById('active-employees').textContent = activeEmployees.length;
                 
-                const today = new persianDate().format('YYYY/MM/DD');
+                const currentDate = this.getCurrentPersianDate();
+                const today = `${currentDate.yearString}/${currentDate.monthString}/${currentDate.dayString}`;
                 const todayTasks = this.tasks.filter(task => task.date === today);
                 document.getElementById('today-tasks').textContent = todayTasks.length;
                 
