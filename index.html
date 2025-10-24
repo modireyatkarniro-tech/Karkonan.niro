@@ -1957,7 +1957,8 @@ select.form-control {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
         <script>
-      class EmployeeManagementSystem {
+     
+class EmployeeManagementSystem {
             constructor() {
                 this.currentUser = null;
                 this.employees = JSON.parse(localStorage.getItem('employees')) || [];
@@ -2571,60 +2572,29 @@ getPersianDayOfWeek(date) {
 getCurrentPersianDate() {
     try {
         const now = new Date();
-        
-        // الگوریتم ساده برای تبدیل تاریخ میلادی به شمسی
-        // این یک تبدیل ساده است - برای دقت بیشتر از کتابخانه استفاده کنید
-        const gYear = now.getFullYear();
-        const gMonth = now.getMonth() + 1;
-        const gDay = now.getDate();
-        
-        // تاریخ مبنا: 21 مارس 2024 = 1 فروردین 1403
-        const baseGregorian = new Date(2024, 2, 21);
-        const basePersian = { year: 1403, month: 1, day: 1 };
-        
-        // محاسبه تفاوت روزها
-        const diffTime = now - baseGregorian;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        
-        // تبدیل به تاریخ شمسی
-        let persianDate = { ...basePersian };
-        let remainingDays = diffDays;
-        
-        while (remainingDays > 0) {
-            const daysInMonth = this.getPersianMonthDays(persianDate.year)[persianDate.month - 1];
-            if (persianDate.day + remainingDays <= daysInMonth) {
-                persianDate.day += remainingDays;
-                remainingDays = 0;
-            } else {
-                remainingDays -= (daysInMonth - persianDate.day + 1);
-                persianDate.day = 1;
-                persianDate.month++;
-                if (persianDate.month > 12) {
-                    persianDate.month = 1;
-                    persianDate.year++;
-                }
-            }
-        }
+        const pDate = new persianDate(now);
         
         return {
-            year: persianDate.year,
-            month: persianDate.month,
-            day: persianDate.day,
-            yearString: persianDate.year.toString(),
-            monthString: persianDate.month.toString().padStart(2, '0'),
-            dayString: persianDate.day.toString().padStart(2, '0')
+            year: pDate.year(),
+            month: pDate.month(),
+            day: pDate.date(),
+            yearString: pDate.year().toString(),
+            monthString: (pDate.month()).toString().padStart(2, '0'),
+            dayString: pDate.date().toString().padStart(2, '0')
         };
-        
     } catch (error) {
         console.error('Error in getCurrentPersianDate:', error);
-        // Fallback: تاریخ ثابت
+        // Fallback - استفاده از تاریخ واقعی جاری حتی در صورت خطا
+        const now = new Date();
+        const pDate = new persianDate(now);
+        
         return {
-            year: 1404,
-            month: 7,
-            day: 28,
-            yearString: "1404",
-            monthString: "07",
-            dayString: "28"
+            year: pDate.year(),
+            month: pDate.month(),
+            day: pDate.date(),
+            yearString: pDate.year().toString(),
+            monthString: (pDate.month()).toString().padStart(2, '0'),
+            dayString: pDate.date().toString().padStart(2, '0')
         };
     }
 }
@@ -3011,62 +2981,61 @@ isPersianLeapYear(year) {
             }
 
             // سیستم جدید محاسبه مرخصی روزانه - کاملاً بازنویسی شده
-            submitDailyLeave() {
-                const form = document.getElementById('daily-leave-form');
-                if (!form.checkValidity()) {
-                    this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
-                    return;
-                }
+       submitDailyLeave() {
+    const form = document.getElementById('daily-leave-form');
+    if (!form.checkValidity()) {
+        this.showNotification('لطفاً تمام فیلدهای ضروری را پر کنید', 'error');
+        return;
+    }
 
-                const startDateStr = document.getElementById('daily-start-date').value;
-                const endDateStr = document.getElementById('daily-end-date').value;
-                
-                // تبدیل تاریخ‌ها به شیء persianDate
-                const startDate = new persianDate(startDateStr);
-                const endDate = new persianDate(endDateStr);
-                
-                // محاسبه دقیق تعداد روزها
-                let daysCount = 0;
-                let currentDate = new persianDate(startDate);
-                
-                while (currentDate.valueOf() <= endDate.valueOf()) {
-                    daysCount++;
-                    currentDate = currentDate.add('day', 1);
-                }
+    const startDateStr = document.getElementById('daily-start-date').value;
+    const endDateStr = document.getElementById('daily-end-date').value;
+    
+    // تبدیل تاریخ‌ها به شیء persianDate
+    const startDate = new persianDate(startDateStr);
+    const endDate = new persianDate(endDateStr);
+    
+    // محاسبه دقیق تعداد روزها
+    let daysCount = 0;
+    let currentDate = new persianDate(startDate);
+    
+    while (currentDate.valueOf() <= endDate.valueOf()) {
+        daysCount++;
+        currentDate = currentDate.add('day', 1);
+    }
 
-                console.log('Start Date:', startDateStr, 'End Date:', endDateStr, 'Days Count:', daysCount);
+    console.log('Start Date:', startDateStr, 'End Date:', endDateStr, 'Days Count:', daysCount);
 
-                if (daysCount <= 0) {
-                    this.showNotification('تاریخ پایان باید بعد از تاریخ شروع باشد', 'error');
-                    return;
-                }
+    if (daysCount <= 0) {
+        this.showNotification('تاریخ پایان باید بعد از تاریخ شروع باشد', 'error');
+        return;
+    }
 
-                if (daysCount > 30) {
-                    this.showNotification('مدت مرخصی نمی‌تواند بیشتر از ۳۰ روز باشد', 'error');
-                    return;
-                }
+    if (daysCount > 30) {
+        this.showNotification('مدت مرخصی نمی‌تواند بیشتر از ۳۰ روز باشد', 'error');
+        return;
+    }
 
-                const request = {
-                    id: Date.now().toString(),
-                    userId: this.currentUser.code,
-                    userName: this.currentUser.name,
-                    type: 'daily_leave',
-                    startDate: startDateStr,
-                    endDate: endDateStr,
-                    daysCount: daysCount,
-                    reason: document.getElementById('daily-reason').value,
-                    status: 'pending',
-                    createdAt: new Date().toISOString()
-                };
+    const request = {
+        id: Date.now().toString(),
+        userId: this.currentUser.code,
+        userName: this.currentUser.name,
+        type: 'daily_leave',
+        startDate: startDateStr,
+        endDate: endDateStr,
+        daysCount: daysCount,
+        reason: document.getElementById('daily-reason').value,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+    };
 
-                this.requests.push(request);
-                this.saveRequests();
-                
-                document.getElementById('daily-leave-modal').classList.remove('active');
-                this.showNotification(`درخواست مرخصی ${daysCount} روزه با موفقیت ارسال شد`, 'success');
-                this.loadEmployeeRequests();
-            }
-
+    this.requests.push(request);
+    this.saveRequests();
+    
+    document.getElementById('daily-leave-modal').classList.remove('active');
+    this.showNotification(`درخواست مرخصی ${daysCount} روزه با موفقیت ارسال شد`, 'success');
+    this.loadEmployeeRequests();
+}  
             submitHourlyLeave() {
                 const form = document.getElementById('hourly-leave-form');
                 if (!form.checkValidity()) {
@@ -4628,3 +4597,4 @@ loadAdminDuty() {
         </script>
 </body>
 </html>
+ 
